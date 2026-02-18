@@ -1,4 +1,4 @@
-# PIPE DL
+# PipeDL
 
 <p align="left">
   <img src="docs/assets/pipedl-logo-bold.svg" alt="PipeDL logo" width="620" />
@@ -7,24 +7,122 @@
 ![Python](https://img.shields.io/badge/Python-3.10%2B-2563EB)
 ![Brave Extension](https://img.shields.io/badge/Brave-MV3-F97316)
 ![License](https://img.shields.io/badge/License-MIT-16A34A)
+![Status](https://img.shields.io/badge/Status-Active-22C55E)
 
-**PipeDL is a bold, modern `yt-dlp` workflow toolkit with:**
-- **Web app control panel**
-- **Brave extension popup**
-- **YouTube in-page action button**
+> **PipeDL** is a modern `yt-dlp` workflow suite with a web dashboard, Brave extension, and YouTube in-page controls.
 
 ---
 
-## WHY PIPE DL
+## 🚀 Launch in 60 Seconds
 
-- **FAST START**: paste URL and download immediately
-- **POWER MODE**: exact quality selection + advanced flags
-- **QUEUE CONTROL**: queued/running visibility, concurrency, cancel
-- **LIVE FEEDBACK**: real-time logs + task history
+```bash
+git clone https://github.com/Giggl3z/pipedl.git
+cd pipedl
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\run.ps1
+```
+
+Open: **http://localhost:5000**
 
 ---
 
-## PROJECT STRUCTURE
+## ✨ Why PipeDL
+
+### ⚡ Fast by default
+- Paste URL → download immediately
+- Built-in presets (Best / MP4 / WebM / MP3 / Opus / WAV)
+
+### 🎛️ Powerful when needed
+- Exact quality picker (`yt-dlp -F` style)
+- Advanced options (subs, metadata, thumbnail, retries, rate limit)
+
+### 📦 Queue-aware workflow
+- Queue + running visibility
+- Concurrency controls
+- Cancel queued/running tasks
+
+### 🧠 Feedback-first UI
+- Live logs
+- Task history
+- Status chips + queue/timing tooltips
+
+---
+
+## 🧩 Product Surface
+
+- **Web App** (`yt-dlp-gui`) → full control center
+- **Brave Popup** (`yt-dlp-brave-extension`) → compact controller
+- **YouTube Action Button** → download from watch page directly
+
+---
+
+## 📦 Install Options
+
+### Option A — Recommended scripts
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\run.ps1
+```
+
+### Option B — Manual
+
+```powershell
+cd yt-dlp-gui
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python app.py
+```
+
+---
+
+## 🧭 First-Time Setup Checklist
+
+### 1) Start backend
+Run `python app.py` (or `run.ps1`) and keep terminal open.
+
+### 2) Load extension in Brave
+1. Open `brave://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked**
+4. Select `yt-dlp-brave-extension/`
+
+### 3) Test from YouTube
+1. Open a video page (`/watch` or `/shorts`)
+2. Click **PipeDL** near Like/Share
+3. Select format and download
+
+Default output folder:
+- `C:\Users\<you>\Downloads\PipeDL`
+
+---
+
+## 🖥️ UI Modes
+
+### Simple Mode
+- Minimal controls
+- Fast download path
+
+### Pro Mode
+- Exact quality picker
+- Queue controls (stats / concurrency / cancel)
+- Advanced options panel
+
+---
+
+## 🔌 API Endpoints
+
+- `POST /api/download`
+- `POST /api/formats`
+- `GET /api/status/<task_id>`
+- `GET /api/tasks`
+- `POST /api/cancel/<task_id>`
+- `GET/POST /api/settings`
+- `POST /api/open-downloads`
+
+---
+
+## 🗂️ Repository Layout
 
 ```text
 .
@@ -50,107 +148,25 @@
 
 ---
 
-## INSTALL (GIT)
+## 📚 Documentation
 
-```bash
-git clone https://github.com/Giggl3z/pipedl.git
-cd pipedl
-```
-
-Update later:
-
-```bash
-git pull
-```
+- Setup → [`docs/SETUP.md`](docs/SETUP.md)
+- Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
+- Changelog → [`CHANGELOG.md`](CHANGELOG.md)
+- Release template → [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
+- Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
+- Security notes → [`SECURITY.md`](SECURITY.md)
 
 ---
 
-## QUICK START
+## ⚠️ Important Limitations
 
-### 1) Setup once
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
-```
-
-### 2) Run PipeDL
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\run.ps1
-```
-
-### 3) Open app
-
-- **URL**: `http://localhost:5000`
-- **Output folder**: `C:\Users\<you>\Downloads\PipeDL`
-
----
-
-## BRAVE EXTENSION SETUP
-
-1. Open `brave://extensions`
-2. Enable **Developer mode**
-3. Click **Load unpacked**
-4. Select: `yt-dlp-brave-extension/`
-
-Then on YouTube:
-1. Open a video page (`/watch` or `/shorts`)
-2. Click **PipeDL** near Like/Share
-3. Choose format and download
-
----
-
-## WEB UI MODES
-
-### SIMPLE MODE
-- Quick download flow
-- Minimal options
-
-### PRO MODE
-- Advanced options
-- Exact quality picker
-- Queue controls (stats / concurrency / cancel)
-
-### TASK STATUSES
-- `queued`
-- `running`
-- `done`
-- `error`
-- `canceled`
-
----
-
-## API
-
-- `POST /api/download`
-- `POST /api/formats`
-- `GET /api/status/<task_id>`
-- `GET /api/tasks`
-- `POST /api/cancel/<task_id>`
-- `GET/POST /api/settings`
-- `POST /api/open-downloads`
-
----
-
-## DOCS
-
-- Setup: [`docs/SETUP.md`](docs/SETUP.md)
-- Troubleshooting: [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
-- Changelog: [`CHANGELOG.md`](CHANGELOG.md)
-- Release template: [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
-- Public release checklist: [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
-- Security notes: [`SECURITY.md`](SECURITY.md)
-
----
-
-## IMPORTANT LIMITATIONS
-
-- Browser extensions cannot run `yt-dlp` directly (sandbox limitation).
+- Browser extensions cannot execute `yt-dlp` directly (sandbox restriction).
 - Local backend (`yt-dlp-gui`) must be running for extension actions.
 
 ---
 
-## CONTRIBUTING
+## 🤝 Contributing
 
 - Use issue templates for bug/feature reports
 - Keep PRs focused and testable
@@ -158,10 +174,10 @@ Then on YouTube:
 
 ---
 
-## LICENSE
+## ⚖️ License
 
 MIT — see [`LICENSE`](LICENSE)
 
-## RESPONSIBLE USE
+## ✅ Responsible Use
 
 Use PipeDL in compliance with platform Terms of Service and applicable laws.
