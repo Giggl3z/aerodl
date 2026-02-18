@@ -1,0 +1,15 @@
+<svg width="880" height="220" viewBox="0 0 880 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="m1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="28" y="38" width="144" height="144" rx="28" fill="#0B1020"/>
+  <path d="M76 148V72H120C136 72 148 83 148 98C148 114 136 125 120 125H96V148H76Z" fill="url(#m1)"/>
+  <path d="M92 95H118" stroke="#E2E8F0" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
+
+  <text x="206" y="118" fill="#E2E8F0" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="72" font-weight="700">PipeDL</text>
+  <text x="210" y="151" fill="#94A3B8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="20" font-weight="500" letter-spacing="2">FAST • CLEAN • LOCAL</text>
+</svg>

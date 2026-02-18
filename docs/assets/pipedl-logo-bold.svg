@@ -1,0 +1,16 @@
+<svg width="900" height="240" viewBox="0 0 900 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="b1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#3B82F6"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="24" y="24" width="190" height="190" rx="34" fill="#071021"/>
+  <rect x="42" y="42" width="154" height="154" rx="24" stroke="#1E293B" stroke-width="2"/>
+  <path d="M84 166V72H136C160 72 176 87 176 106C176 128 160 143 136 143H108V166H84Z" fill="url(#b1)"/>
+  <path d="M70 60V180" stroke="#93C5FD" stroke-width="10" stroke-linecap="round"/>
+
+  <text x="240" y="122" fill="#F8FAFC" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="84" font-weight="800" letter-spacing="1">PipeDL</text>
+  <text x="244" y="164" fill="#60A5FA" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="24" font-weight="600" letter-spacing="4">YT-DLP WORKFLOW SUITE</text>
+</svg>
