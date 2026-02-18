@@ -13,6 +13,13 @@ Use this guide for a clean first-time setup.
 
 ---
 
+## 0) Clone repo
+
+```bash
+git clone https://github.com/Giggl3z/pipedl.git
+cd pipedl
+```
+
 ## 1) Install backend dependencies
 
 ```powershell

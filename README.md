@@ -53,6 +53,23 @@ PipeDL turns common CLI download tasks into a smoother UI flow while keeping `yt
 
 ---
 
+## 📥 Get the project (Git)
+
+Clone PipeDL:
+
+```bash
+git clone https://github.com/Giggl3z/pipedl.git
+cd pipedl
+```
+
+Or update an existing local copy:
+
+```bash
+git pull
+```
+
+---
+
 ## ⚡ Quick Start (Recommended)
 
 ### 1) Setup once
