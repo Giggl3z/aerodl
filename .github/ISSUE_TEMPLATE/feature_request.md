@@ -1,6 +1,6 @@
 ---
 name: "✨ Feature request"
-about: Suggest an improvement for AeroDL
+about: Suggest an improvement for PipeDL
 title: "[feature] "
 labels: enhancement
 assignees: ''

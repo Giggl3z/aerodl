@@ -29,7 +29,7 @@ Use this before marking the repo public.
 - [ ] Start backend (`python app.py`) works
 - [ ] Web UI can start downloads
 - [ ] Extension popup can start downloads
-- [ ] YouTube in-page AeroDL button appears and works
+- [ ] YouTube in-page PipeDL button appears and works
 - [ ] Error states show useful messages
 
 ## Release

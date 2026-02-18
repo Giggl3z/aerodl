@@ -41,13 +41,13 @@ function setConsole(text) {
 function applyTheme(theme, save = true) {
   document.body.setAttribute('data-theme', theme);
   ui.swatches.forEach((s) => s.classList.toggle('active', s.dataset.theme === theme));
-  if (save) chrome.storage.local.set({ aerodl_theme: theme });
+  if (save) chrome.storage.local.set({ pipedl_theme: theme });
 }
 
 async function loadSettings() {
-  const stored = await chrome.storage.local.get(['aerodl_backend', 'aerodl_theme']);
-  state.backend = stored.aerodl_backend || 'http://localhost:5000';
-  applyTheme(stored.aerodl_theme || 'ocean', false);
+  const stored = await chrome.storage.local.get(['pipedl_backend', 'pipedl_theme']);
+  state.backend = stored.pipedl_backend || 'http://localhost:5000';
+  applyTheme(stored.pipedl_theme || 'ocean', false);
 }
 
 function gatherOptions() {

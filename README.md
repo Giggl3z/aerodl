@@ -1,4 +1,4 @@
-# 🚀 AeroDL
+# 🚀 PipeDL
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Brave Extension](https://img.shields.io/badge/Brave-MV3-orange)
@@ -6,7 +6,7 @@
 
 > A modern `yt-dlp` toolkit with a full web UI + Brave extension controls.
 
-AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and YouTube-integrated actions.
+PipeDL makes `yt-dlp` easier to use with a clean interface, quick presets, and YouTube-integrated actions.
 
 ---
 
@@ -16,7 +16,7 @@ AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and Y
 - ⚙️ Advanced `yt-dlp` options (subs, metadata, thumbnail, retries, rate limit)
 - 📜 Live console output
 - 🧾 Task history
-- ▶️ YouTube action-row **AeroDL** button with quick menu
+- ▶️ YouTube action-row **PipeDL** button with quick menu
 - 🧩 Brave popup controller + options page
 
 ---
@@ -51,7 +51,7 @@ AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and Y
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
 ```
 
-### 2) Start AeroDL backend — one-liner
+### 2) Start PipeDL backend — one-liner
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\run.ps1
@@ -64,7 +64,7 @@ cd yt-dlp-gui; python -m pip install flask yt-dlp; python app.py
 ```
 
 - 🌐 GUI URL: `http://localhost:5000`
-- 📂 Download path: `C:\Users\<you>\Downloads\AeroDL`
+- 📂 Download path: `C:\Users\<you>\Downloads\PipeDL`
 
 ### 3) Load Brave extension
 
@@ -76,7 +76,7 @@ cd yt-dlp-gui; python -m pip install flask yt-dlp; python app.py
 ### 4) Download from YouTube
 
 1. Open a YouTube video page
-2. Click **AeroDL** near Like/Share buttons
+2. Click **PipeDL** near Like/Share buttons
 3. Pick a format and press **Download**
 
 ---
@@ -118,4 +118,4 @@ This project is licensed under the MIT License. See [`LICENSE`](LICENSE).
 
 ## ⚠️ Legal / Responsible Use
 
-Use AeroDL responsibly and in compliance with platform Terms of Service and your local laws.
+Use PipeDL responsibly and in compliance with platform Terms of Service and your local laws.

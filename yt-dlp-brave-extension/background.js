@@ -1,14 +1,14 @@
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (!message) return;
 
-  if (message.type === 'AERODL_OPEN_POPUP') {
+  if (message.type === 'PIPEDL_OPEN_POPUP') {
     // Opens extension popup/dashboard in a dedicated tab
     chrome.tabs.create({ url: chrome.runtime.getURL('popup.html') });
     sendResponse({ ok: true });
     return;
   }
 
-  if (message.type !== 'AERODL_FETCH') return;
+  if (message.type !== 'PIPEDL_FETCH') return;
 
   (async () => {
     try {

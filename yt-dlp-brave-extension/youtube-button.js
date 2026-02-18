@@ -29,13 +29,13 @@
   }
 
   async function getBackend() {
-    const data = await chrome.storage.local.get(['aerodl_backend']);
-    return data.aerodl_backend || 'http://localhost:5000';
+    const data = await chrome.storage.local.get(['pipedl_backend']);
+    return data.pipedl_backend || 'http://localhost:5000';
   }
 
   function extFetch(url, options) {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({ type: 'AERODL_FETCH', url, options }, (response) => {
+      chrome.runtime.sendMessage({ type: 'PIPEDL_FETCH', url, options }, (response) => {
         if (chrome.runtime.lastError) return reject(new Error(chrome.runtime.lastError.message || 'Extension fetch failed'));
         if (!response) return reject(new Error('No response from extension background'));
         resolve(response);
@@ -328,7 +328,7 @@
             <div class="channel">${ctx.channel.replace(/</g, '&lt;')}</div>
           </div>
         </div>
-        <div class="aerodl-title">AeroDL</div>
+        <div class="aerodl-title">PipeDL</div>
         <div class="aerodl-sub">Quick download menu</div>
       </div>
       <div class="aerodl-list">
@@ -385,7 +385,7 @@
     });
 
     menu.querySelector('#aerodl-open-popup').addEventListener('click', () => {
-      chrome.runtime.sendMessage({ type: 'AERODL_OPEN_POPUP' });
+      chrome.runtime.sendMessage({ type: 'PIPEDL_OPEN_POPUP' });
     });
 
     menu.querySelector('#aerodl-start').addEventListener('click', async () => {
@@ -395,10 +395,10 @@
       startBtn.disabled = true;
       try {
         const taskId = await startDownload(selectedFormat);
-        showToast(`AeroDL queued (${taskId.slice(0, 8)})`);
+        showToast(`PipeDL queued (${taskId.slice(0, 8)})`);
         closeMenu();
       } catch (err) {
-        showToast(`AeroDL error: ${err.message}`, true);
+        showToast(`PipeDL error: ${err.message}`, true);
         startBtn.disabled = false;
         startBtn.textContent = old;
       }
@@ -429,7 +429,7 @@
           <path d="M4.5 18h15"></path>
         </svg>
       </span>
-      <span>AeroDL</span>
+      <span>PipeDL</span>
     `;
 
     btn.addEventListener('click', () => {

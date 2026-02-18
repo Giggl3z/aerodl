@@ -19,7 +19,7 @@ Include:
 - The Brave extension **does not run yt-dlp directly**. It sends requests to a local backend.
 - The backend is intended for local use (`localhost` / `127.0.0.1`) and should not be exposed publicly without additional hardening.
 - Cookies paths and other optional inputs are user-provided; review before sharing logs/screenshots publicly.
-- Downloaded files are stored on local machine (`Downloads/AeroDL` by default).
+- Downloaded files are stored on local machine (`Downloads/PipeDL` by default).
 
 ## Hardening Recommendations
 

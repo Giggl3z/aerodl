@@ -5,7 +5,7 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot
 
-Write-Host '🚀 Starting AeroDL backend...' -ForegroundColor Cyan
+Write-Host '🚀 Starting PipeDL backend...' -ForegroundColor Cyan
 
 $guiPath = Join-Path $PSScriptRoot 'yt-dlp-gui'
 if (-not (Test-Path $guiPath)) {

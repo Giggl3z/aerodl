@@ -14,7 +14,7 @@ app = Flask(__name__, static_folder="static")
 LOG_MAX_LINES = 700
 MAX_TASKS = 120
 # Save downloads to local machine Downloads folder (outside workspace)
-DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads", "AeroDL")
+DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads", "PipeDL")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 TASKS = {}

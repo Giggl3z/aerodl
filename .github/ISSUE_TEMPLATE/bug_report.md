@@ -1,6 +1,6 @@
 ---
 name: "🐛 Bug report"
-about: Report an issue with AeroDL GUI or extension
+about: Report an issue with PipeDL GUI or extension
 title: "[bug] "
 labels: bug
 assignees: ''
@@ -24,4 +24,4 @@ Paste console/backend logs if available.
 - OS:
 - Browser:
 - Python version:
-- AeroDL version/commit:
+- PipeDL version/commit:

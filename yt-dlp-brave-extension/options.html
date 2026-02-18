@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AeroDL Options</title>
+  <title>PipeDL Options</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
     body{font-family:"Sora",Inter,system-ui,sans-serif;margin:0;padding:24px;background:#0a1222;color:#e8eefc}
@@ -18,7 +18,7 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>AeroDL Extension Settings</h1>
+    <h1>PipeDL Extension Settings</h1>
     <p>Set the backend URL where your Flask app is running.</p>
 
     <div class="card">
@@ -35,13 +35,13 @@
     const msg = document.getElementById('msg');
 
     async function load() {
-      const data = await chrome.storage.local.get(['aerodl_backend']);
-      backend.value = data.aerodl_backend || 'http://localhost:5000';
+      const data = await chrome.storage.local.get(['pipedl_backend']);
+      backend.value = data.pipedl_backend || 'http://localhost:5000';
     }
 
     save.addEventListener('click', async () => {
       const value = backend.value.trim() || 'http://localhost:5000';
-      await chrome.storage.local.set({ aerodl_backend: value });
+      await chrome.storage.local.set({ pipedl_backend: value });
       msg.textContent = `Saved: ${value}`;
       setTimeout(() => (msg.textContent = ''), 2000);
     });

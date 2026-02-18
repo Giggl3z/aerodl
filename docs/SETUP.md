@@ -1,6 +1,6 @@
 # 🛠 Setup Guide
 
-Follow this once to get AeroDL running end-to-end.
+Follow this once to get PipeDL running end-to-end.
 
 ---
 
@@ -46,13 +46,13 @@ Expected: Flask server running at `http://localhost:5000`.
 ## 4) First download test
 
 1. Open a YouTube video (`/watch` or `/shorts`)
-2. Click **AeroDL** near the action buttons
+2. Click **PipeDL** near the action buttons
 3. Choose format
 4. Press **Download**
 
 Success behavior:
 - Task is queued
-- File saves to `Downloads\AeroDL`
+- File saves to `Downloads\PipeDL`
 
 ---
 

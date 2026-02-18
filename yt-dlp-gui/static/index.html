@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AeroDL Studio · yt-dlp Web GUI</title>
+  <title>PipeDL Studio · yt-dlp Web GUI</title>
   <style>
     :root {
       --bg: #040916;
@@ -418,7 +418,7 @@
   <div class="container">
     <header class="topbar">
       <div class="brand">
-        <h1>AERODL</h1>
+        <h1>PIPEDL</h1>
         <p>yt-dlp command studio</p>
       </div>
       <div class="actions">
@@ -579,7 +579,7 @@
 
     function loadPrefs() {
       try {
-        const prefs = JSON.parse(localStorage.getItem('aerodl_prefs') || '{}');
+        const prefs = JSON.parse(localStorage.getItem('pipedl_prefs') || '{}');
         if (prefs.theme) applyTheme(prefs.theme, false);
         if (prefs.outputTemplate) outputTemplateInput.value = prefs.outputTemplate;
         if (prefs.cookiesPath) cookiesPathInput.value = prefs.cookiesPath;
@@ -597,7 +597,7 @@
         theme: document.body.getAttribute('data-theme') || 'ocean',
         ...gatherOptions(),
       };
-      localStorage.setItem('aerodl_prefs', JSON.stringify(prefs));
+      localStorage.setItem('pipedl_prefs', JSON.stringify(prefs));
     }
 
     function applyTheme(theme, save = true) {

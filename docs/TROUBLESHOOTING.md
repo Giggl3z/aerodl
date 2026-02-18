@@ -4,7 +4,7 @@ Common issues and quick fixes.
 
 ---
 
-## ❌ "Fetch failed" when clicking AeroDL on YouTube
+## ❌ "Fetch failed" when clicking PipeDL on YouTube
 
 1. Confirm backend is running:
    ```bash
@@ -17,7 +17,7 @@ Common issues and quick fixes.
 
 ---
 
-## 👀 AeroDL button not visible on YouTube
+## 👀 PipeDL button not visible on YouTube
 
 - Ensure extension is enabled
 - Reload extension + refresh tab
@@ -58,6 +58,6 @@ python app.py
 
 Current default path:
 
-`C:\Users\<you>\Downloads\AeroDL`
+`C:\Users\<you>\Downloads\PipeDL`
 
 Change it in `yt-dlp-gui/app.py` (`DOWNLOAD_DIR`) if needed.

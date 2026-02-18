@@ -1,6 +1,6 @@
-# 🧩 AeroDL Brave Extension (MV3)
+# 🧩 PipeDL Brave Extension (MV3)
 
-Brave extension UI for controlling the local AeroDL backend.
+Brave extension UI for controlling the local PipeDL backend.
 
 ---
 
@@ -46,4 +46,4 @@ python app.py
 - 🎨 Theme switcher
 - 📂 Open downloads folder
 - 🛠 Options page for backend URL
-- ▶️ YouTube in-page **AeroDL** action-row button + menu
+- ▶️ YouTube in-page **PipeDL** action-row button + menu

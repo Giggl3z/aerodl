@@ -1,4 +1,4 @@
-# 🖥️ AeroDL GUI (`yt-dlp-gui`)
+# 🖥️ PipeDL GUI (`yt-dlp-gui`)
 
 Local web backend + modern website UI for running `yt-dlp` with a clean interface.
 
@@ -36,7 +36,7 @@ Open in browser: `http://localhost:5000`
 
 ## 📂 Download Location
 
-`C:\Users\<you>\Downloads\AeroDL`
+`C:\Users\<you>\Downloads\PipeDL`
 
 ---
 

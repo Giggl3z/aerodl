@@ -1,6 +1,6 @@
 # 📦 Release Notes Template
 
-## AeroDL vX.Y.Z
+## PipeDL vX.Y.Z
 
 ### ✨ Highlights
 
@@ -26,7 +26,7 @@
 ### ⚠️ Notes
 
 - Requires local backend running for extension actions.
-- Downloads saved to `Downloads/AeroDL` by default.
+- Downloads saved to `Downloads/PipeDL` by default.
 
 ### 🙌 Thanks
 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "AeroDL for yt-dlp",
+  "name": "PipeDL for yt-dlp",
   "description": "Brave extension UI for controlling a local yt-dlp backend.",
   "version": "1.0.0",
   "permissions": ["storage"],
@@ -16,7 +16,7 @@
     }
   ],
   "action": {
-    "default_title": "AeroDL",
+    "default_title": "PipeDL",
     "default_popup": "popup.html"
   },
   "background": {
