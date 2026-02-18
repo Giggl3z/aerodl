@@ -6,7 +6,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-2563EB) ![Brave Extension](https://img.shields.io/badge/Brave-MV3-F97316) ![License](https://img.shields.io/badge/License-MIT-16A34A) ![Status](https://img.shields.io/badge/Status-Active-22C55E)
 
-> **PipeDL** is a bold `yt-dlp` command studio — fast presets, exact format control, and queue-safe downloads from one clean interface.
+> **PipeDL** is a `yt-dlp` command studio - fast presets, exact format control, and queue-safe downloads from one clean interface.
 
 ---
 
@@ -55,7 +55,7 @@ Then open **http://localhost:5000** and drop your first URL.
 
 ## 📦 Install Options
 
-### Option A — Recommended scripts
+### Option A - Recommended scripts
 
 ```powershell
 .\setup.ps1
@@ -69,7 +69,7 @@ powershell -ExecutionPolicy Bypass -File .\setup.ps1
 powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-### Option B — Manual
+### Option B - Manual
 
 ```powershell
 cd yt-dlp-gui
@@ -180,7 +180,7 @@ Default output folder:
 
 ## ⚖️ License
 
-MIT — see [`LICENSE`](LICENSE)
+MIT - see [`LICENSE`](LICENSE)
 
 ## ✅ Responsible Use
 
