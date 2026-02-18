@@ -21,6 +21,13 @@ python -m pip install flask yt-dlp
 python app.py
 ```
 
+Optional (recommended for local hardening): set an API token before starting.
+
+```powershell
+$env:PIPEDL_TOKEN="your-secret-token"
+python app.py
+```
+
 Expected: Flask server running at `http://localhost:5000`.
 
 ---

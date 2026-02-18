@@ -28,9 +28,12 @@
     }
   }
 
-  async function getBackend() {
-    const data = await chrome.storage.local.get(['pipedl_backend']);
-    return data.pipedl_backend || 'http://localhost:5000';
+  async function getBackendConfig() {
+    const data = await chrome.storage.local.get(['pipedl_backend', 'pipedl_token']);
+    return {
+      backend: data.pipedl_backend || 'http://localhost:5000',
+      token: data.pipedl_token || '',
+    };
   }
 
   function extFetch(url, options) {
@@ -72,11 +75,14 @@
   }
 
   async function startDownload(format = 'best_video') {
-    const backend = await getBackend();
+    const { backend, token } = await getBackendConfig();
     const url = getWatchUrl();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['X-PipeDL-Token'] = token;
+
     const res = await extFetch(`${backend}/api/download`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ url, format, options: { autoOpenFolder: true } }),
     });
     if (!res.ok) throw new Error(res?.data?.error || `${res.status} ${res.statusText}`);
