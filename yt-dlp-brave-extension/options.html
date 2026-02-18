@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AeroDL Options</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+    body{font-family:"Sora",Inter,system-ui,sans-serif;margin:0;padding:24px;background:#0a1222;color:#e8eefc}
+    .wrap{max-width:700px;margin:0 auto}
+    .card{background:#101c34;border:1px solid #273753;border-radius:14px;padding:16px}
+    label{display:block;margin-bottom:6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#9db0cf}
+    input{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #273753;background:#0c152a;color:#e8eefc}
+    button{margin-top:12px;padding:9px 14px;border-radius:10px;border:1px solid #3d5b85;background:#1a2c51;color:#e8eefc;cursor:pointer}
+    p{color:#9db0cf}
+    #msg{margin-top:8px;color:#7dd3fc}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>AeroDL Extension Settings</h1>
+    <p>Set the backend URL where your Flask app is running.</p>
+
+    <div class="card">
+      <label for="backend">Backend Base URL</label>
+      <input id="backend" type="text" placeholder="http://localhost:5000" />
+      <button id="save">Save</button>
+      <div id="msg"></div>
+    </div>
+  </div>
+
+  <script>
+    const backend = document.getElementById('backend');
+    const save = document.getElementById('save');
+    const msg = document.getElementById('msg');
+
+    async function load() {
+      const data = await chrome.storage.local.get(['aerodl_backend']);
+      backend.value = data.aerodl_backend || 'http://localhost:5000';
+    }
+
+    save.addEventListener('click', async () => {
+      const value = backend.value.trim() || 'http://localhost:5000';
+      await chrome.storage.local.set({ aerodl_backend: value });
+      msg.textContent = `Saved: ${value}`;
+      setTimeout(() => (msg.textContent = ''), 2000);
+    });
+
+    load();
+  </script>
+</body>
+</html>

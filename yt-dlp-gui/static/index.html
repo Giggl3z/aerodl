@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AeroDL Studio · yt-dlp Web GUI</title>
+  <style>
+    :root {
+      --bg: #040916;
+      --panel: #0b1324;
+      --panel-2: #0f1b33;
+      --text: #e8eefc;
+      --muted: #9db0cf;
+      --accent: #6ed4ff;
+      --accent-2: #7a7cff;
+      --good: #4ade80;
+      --bad: #fb7185;
+      --line: rgba(157, 176, 207, 0.24);
+      --hero: radial-gradient(circle at 30% 0%, rgba(110, 212, 255, 0.18), transparent 45%), linear-gradient(to bottom, #0a1222 0%, #040916 65%);
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow: 0 24px 48px rgba(2, 8, 20, 0.62);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    body[data-theme="sunset"] {
+      --bg: #130b10;
+      --panel: #20111a;
+      --panel-2: #2a1722;
+      --text: #ffe9ef;
+      --muted: #f5b5c5;
+      --accent: #fb7185;
+      --accent-2: #f59e0b;
+      --line: rgba(245, 181, 197, 0.24);
+      --hero: radial-gradient(circle at 30% 0%, rgba(251, 113, 133, 0.22), transparent 45%), linear-gradient(to bottom, #2a1722 0%, #130b10 68%);
+    }
+
+    body[data-theme="matrix"] {
+      --bg: #010504;
+      --panel: #06100d;
+      --panel-2: #0b1814;
+      --text: #d9ffe9;
+      --muted: #88cba8;
+      --accent: #4ade80;
+      --accent-2: #22c55e;
+      --line: rgba(74, 222, 128, 0.22);
+      --hero: radial-gradient(circle at 30% 0%, rgba(74, 222, 128, 0.2), transparent 45%), linear-gradient(to bottom, #06100d 0%, #010504 70%);
+    }
+
+    body[data-theme="violet"] {
+      --bg: #0b0818;
+      --panel: rgba(32, 16, 56, 0.8);
+      --panel-2: rgba(45, 25, 70, 0.85);
+      --text: #f2edff;
+      --muted: #d5c5ff;
+      --accent: #c084fc;
+      --accent-2: #60a5fa;
+      --line: rgba(197, 168, 255, 0.26);
+      --hero: radial-gradient(circle at 50% -5%, rgba(192, 132, 252, 0.25), transparent 45%), linear-gradient(to bottom, #1b1234 0%, #0b0818 70%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--hero);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      transition: background .25s ease;
+    }
+
+    .container {
+      width: min(1180px, 96vw);
+      margin: 0 auto;
+      padding: 24px 0 20px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 42px);
+      letter-spacing: .28em;
+      font-weight: 600;
+    }
+
+    .brand p {
+      margin: 0;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      font-size: 11px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button, .btn {
+      border: 1px solid var(--line);
+      background: linear-gradient(140deg, var(--panel-2), var(--panel));
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: .03em;
+      transition: transform .1s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    button:hover, .btn:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--accent) 40%, white); }
+
+    .btn-primary {
+      background: linear-gradient(125deg, color-mix(in srgb, var(--accent) 65%, transparent), color-mix(in srgb, var(--accent-2) 70%, transparent));
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+      box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .hero {
+      margin-bottom: 18px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--panel) 85%, transparent), color-mix(in srgb, var(--panel-2) 90%, transparent));
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1.2fr .8fr;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(18px, 2vw, 28px);
+      letter-spacing: .04em;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .stat {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--panel-2) 70%, transparent);
+    }
+
+    .stat .label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .12em; }
+    .stat .value { margin-top: 4px; font-size: 16px; font-weight: 700; }
+
+    .studio {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: linear-gradient(155deg, color-mix(in srgb, var(--panel) 86%, transparent), color-mix(in srgb, var(--panel-2) 95%, transparent));
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-body { padding: 14px 16px 16px; }
+
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .field input[type="text"], .field input[type="number"], .field select {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel-2) 72%, transparent);
+      color: var(--text);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color .12s ease, box-shadow .12s ease;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .format-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .format-pill {
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 10px;
+      background: color-mix(in srgb, var(--panel-2) 60%, transparent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .format-pill strong { font-size: 13px; }
+    .format-pill span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+    .format-pill.active {
+      border-color: color-mix(in srgb, var(--accent) 60%, var(--line));
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent), 0 10px 20px color-mix(in srgb, var(--accent) 16%, transparent);
+      color: var(--accent);
+    }
+
+    .switches {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .switch {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: color-mix(in srgb, var(--panel-2) 62%, transparent);
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .inline-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .status-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .status-chip.running { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+    .status-chip.done { color: var(--good); border-color: color-mix(in srgb, var(--good) 45%, var(--line)); }
+    .status-chip.error { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 45%, var(--line)); }
+
+    .console {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px;
+      background: #030815;
+      min-height: 330px;
+      max-height: 460px;
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    body[data-theme="matrix"] .console {
+      background: #010403;
+      box-shadow: inset 0 0 0 1px rgba(74, 222, 128, .15);
+    }
+
+    .tasks {
+      max-height: 190px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+
+    .task-row:last-child { border-bottom: 0; }
+    .task-url { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .task-meta { color: var(--muted); font-size: 11px; margin-top: 3px; }
+
+    .theme-row {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel) 85%, transparent);
+      border-radius: 999px;
+      padding: 8px;
+    }
+
+    .swatches { display: flex; gap: 7px; flex-wrap: wrap; }
+
+    .swatch {
+      min-width: 86px;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      font-size: 10px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      text-align: center;
+      cursor: pointer;
+      color: #fff;
+      background: linear-gradient(135deg, #6ed4ff, #7a7cff);
+    }
+
+    .swatch[data-theme="sunset"] { background: linear-gradient(135deg, #fb7185, #f59e0b); }
+    .swatch[data-theme="matrix"] { background: linear-gradient(135deg, #4ade80, #22c55e); }
+    .swatch[data-theme="violet"] { background: linear-gradient(135deg, #c084fc, #60a5fa); }
+    .swatch.active { box-shadow: 0 0 0 2px rgba(255,255,255,.5); }
+
+    .tiny { font-size: 11px; color: var(--muted); }
+
+    @media (max-width: 980px) {
+      .hero, .studio { grid-template-columns: 1fr; }
+      .format-grid, .switches { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body data-theme="ocean">
+  <div class="container">
+    <header class="topbar">
+      <div class="brand">
+        <h1>AERODL</h1>
+        <p>yt-dlp command studio</p>
+      </div>
+      <div class="actions">
+        <button id="open-folder-btn">Open Downloads</button>
+        <button id="toggle-advanced-btn">Advanced Options</button>
+        <button class="btn-primary" id="download-btn">Start Download</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <h2>Full website GUI for yt-dlp CLI workflows</h2>
+        <p>
+          Paste link → choose format preset → tweak advanced flags → run.
+          You get real-time console output, task history, theme modes, and one-click folder access.
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="label">Engine</div><div class="value">yt-dlp</div></div>
+        <div class="stat"><div class="label">Runner</div><div class="value">Python CLI</div></div>
+        <div class="stat"><div class="label">Output</div><div class="value">Live Logs</div></div>
+      </div>
+    </section>
+
+    <section class="studio">
+      <article class="card">
+        <div class="card-header">
+          <h3 class="card-title">Download Studio</h3>
+          <div id="status-chip" class="status-chip">idle</div>
+        </div>
+        <div class="card-body">
+          <div class="field">
+            <label for="url">Video URL</label>
+            <input id="url" type="text" placeholder="https://www.youtube.com/watch?v=..." />
+          </div>
+
+          <div class="field">
+            <label>Format Presets</label>
+            <div class="format-grid" id="format-grid">
+              <button type="button" class="format-pill active" data-format="best_video"><strong>Best Mixed</strong><span>video+audio</span></button>
+              <button type="button" class="format-pill" data-format="mp4"><strong>MP4 Priority</strong><span>h264+m4a</span></button>
+              <button type="button" class="format-pill" data-format="webm"><strong>WebM Priority</strong><span>vp9/opus</span></button>
+              <button type="button" class="format-pill" data-format="audio_best"><strong>Audio MP3</strong><span>extract</span></button>
+              <button type="button" class="format-pill" data-format="audio_opus"><strong>Audio Opus</strong><span>extract</span></button>
+              <button type="button" class="format-pill" data-format="audio_wav"><strong>Audio WAV</strong><span>lossless</span></button>
+            </div>
+          </div>
+
+          <div id="advanced-wrap" style="display:none;">
+            <div class="field">
+              <label for="output-template">Output Template</label>
+              <input id="output-template" type="text" placeholder="%(title)s [%(id)s].%(ext)s" />
+            </div>
+
+            <div class="switches">
+              <label class="switch"><input type="checkbox" id="write-subs" /> Write auto subtitles</label>
+              <label class="switch"><input type="checkbox" id="embed-meta" /> Embed metadata</label>
+              <label class="switch"><input type="checkbox" id="embed-thumb" /> Embed thumbnail</label>
+              <label class="switch"><input type="checkbox" id="auto-open" checked /> Auto-open folder on success</label>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+              <label for="cookies-path">Cookies file path (optional)</label>
+              <input id="cookies-path" type="text" placeholder="C:\\path\\cookies.txt" />
+            </div>
+
+            <div class="field" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div>
+                <label for="rate-limit">Rate limit</label>
+                <input id="rate-limit" type="text" placeholder="2M or 500K" />
+              </div>
+              <div>
+                <label for="retries">Retries</label>
+                <input id="retries" type="number" min="0" step="1" placeholder="10" />
+              </div>
+            </div>
+          </div>
+
+          <div class="inline-actions">
+            <span class="tiny" id="task-hint">No active task.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <h3 class="card-title">Console + Task History</h3>
+          <button id="refresh-tasks-btn">Refresh</button>
+        </div>
+        <div class="card-body">
+          <div class="console" id="console" aria-live="polite">Waiting for a download task...</div>
+          <div style="height:10px"></div>
+          <div class="tasks" id="tasks"></div>
+        </div>
+      </article>
+    </section>
+
+    <div class="theme-row">
+      <div class="tiny">Theme modes</div>
+      <div class="swatches" id="swatches">
+        <div class="swatch active" data-theme="ocean">Ocean</div>
+        <div class="swatch" data-theme="sunset">Sunset</div>
+        <div class="swatch" data-theme="matrix">Matrix</div>
+        <div class="swatch" data-theme="violet">Violet</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const formatButtons = Array.from(document.querySelectorAll('.format-pill'));
+    const urlInput = document.getElementById('url');
+    const downloadBtn = document.getElementById('download-btn');
+    const openFolderBtn = document.getElementById('open-folder-btn');
+    const toggleAdvancedBtn = document.getElementById('toggle-advanced-btn');
+    const refreshTasksBtn = document.getElementById('refresh-tasks-btn');
+    const advancedWrap = document.getElementById('advanced-wrap');
+    const consoleEl = document.getElementById('console');
+    const tasksEl = document.getElementById('tasks');
+    const statusChip = document.getElementById('status-chip');
+    const taskHint = document.getElementById('task-hint');
+    const swatches = Array.from(document.querySelectorAll('.swatch'));
+
+    const outputTemplateInput = document.getElementById('output-template');
+    const writeSubsInput = document.getElementById('write-subs');
+    const embedMetaInput = document.getElementById('embed-meta');
+    const embedThumbInput = document.getElementById('embed-thumb');
+    const autoOpenInput = document.getElementById('auto-open');
+    const cookiesPathInput = document.getElementById('cookies-path');
+    const rateLimitInput = document.getElementById('rate-limit');
+    const retriesInput = document.getElementById('retries');
+
+    let selectedFormat = 'best_video';
+    let currentTaskId = null;
+    let pollTimer = null;
+
+    function setStatus(state) {
+      statusChip.className = `status-chip ${state}`;
+      statusChip.textContent = state;
+    }
+
+    function setConsole(text) {
+      consoleEl.textContent = text;
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function gatherOptions() {
+      return {
+        outputTemplate: outputTemplateInput.value.trim(),
+        writeSubs: writeSubsInput.checked,
+        embedMetadata: embedMetaInput.checked,
+        embedThumbnail: embedThumbInput.checked,
+        autoOpenFolder: autoOpenInput.checked,
+        cookiesPath: cookiesPathInput.value.trim(),
+        rateLimit: rateLimitInput.value.trim(),
+        retries: retriesInput.value.trim(),
+      };
+    }
+
+    function loadPrefs() {
+      try {
+        const prefs = JSON.parse(localStorage.getItem('aerodl_prefs') || '{}');
+        if (prefs.theme) applyTheme(prefs.theme, false);
+        if (prefs.outputTemplate) outputTemplateInput.value = prefs.outputTemplate;
+        if (prefs.cookiesPath) cookiesPathInput.value = prefs.cookiesPath;
+        if (prefs.rateLimit) rateLimitInput.value = prefs.rateLimit;
+        if (prefs.retries) retriesInput.value = prefs.retries;
+        writeSubsInput.checked = !!prefs.writeSubs;
+        embedMetaInput.checked = !!prefs.embedMetadata;
+        embedThumbInput.checked = !!prefs.embedThumbnail;
+        autoOpenInput.checked = prefs.autoOpenFolder !== false;
+      } catch {}
+    }
+
+    function savePrefs() {
+      const prefs = {
+        theme: document.body.getAttribute('data-theme') || 'ocean',
+        ...gatherOptions(),
+      };
+      localStorage.setItem('aerodl_prefs', JSON.stringify(prefs));
+    }
+
+    function applyTheme(theme, save = true) {
+      document.body.setAttribute('data-theme', theme);
+      swatches.forEach(s => s.classList.toggle('active', s.dataset.theme === theme));
+      if (save) savePrefs();
+    }
+
+    swatches.forEach(s => s.addEventListener('click', () => applyTheme(s.dataset.theme)));
+
+    formatButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        formatButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedFormat = btn.dataset.format;
+      });
+    });
+
+    toggleAdvancedBtn.addEventListener('click', () => {
+      const hidden = advancedWrap.style.display === 'none';
+      advancedWrap.style.display = hidden ? 'block' : 'none';
+      toggleAdvancedBtn.textContent = hidden ? 'Hide Advanced' : 'Advanced Options';
+    });
+
+    async function openDownloadsFolder() {
+      const res = await fetch('/api/open-downloads', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        taskHint.textContent = data.error || 'Could not open downloads folder.';
+      }
+    }
+
+    async function refreshTasks() {
+      const res = await fetch('/api/tasks');
+      const items = await res.json().catch(() => []);
+      tasksEl.innerHTML = '';
+      if (!Array.isArray(items) || !items.length) {
+        tasksEl.innerHTML = '<div class="task-row"><div><div class="task-url">No tasks yet</div><div class="task-meta">Run your first download</div></div><div></div></div>';
+        return;
+      }
+
+      items.forEach(t => {
+        const row = document.createElement('div');
+        row.className = 'task-row';
+
+        const left = document.createElement('div');
+        left.innerHTML = `<div class="task-url" title="${t.url}">${t.url}</div><div class="task-meta">${t.format} · ${t.created_at || ''}</div>`;
+
+        const right = document.createElement('div');
+        right.innerHTML = `<span class="status-chip ${t.status}">${t.status}</span>`;
+
+        row.append(left, right);
+        row.addEventListener('click', () => {
+          currentTaskId = t.task_id;
+          pollStatus();
+        });
+        tasksEl.appendChild(row);
+      });
+    }
+
+    async function pollStatus() {
+      if (!currentTaskId) return;
+      const res = await fetch(`/api/status/${currentTaskId}`);
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data) return;
+
+      setStatus(data.status || 'idle');
+      if (Array.isArray(data.log)) {
+        setConsole(data.log.join('\n'));
+      }
+
+      if (data.status === 'running') {
+        taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} running...`;
+      } else if (data.status === 'done') {
+        taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} finished.`;
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'Start Download';
+        clearInterval(pollTimer);
+        pollTimer = null;
+        refreshTasks();
+      } else if (data.status === 'error') {
+        taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} failed.`;
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'Start Download';
+        clearInterval(pollTimer);
+        pollTimer = null;
+        refreshTasks();
+      }
+    }
+
+    async function startDownload() {
+      const url = urlInput.value.trim();
+      if (!url) {
+        taskHint.textContent = 'Paste a URL first.';
+        return;
+      }
+
+      savePrefs();
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Starting...';
+      setStatus('running');
+      setConsole('Starting yt-dlp task...');
+
+      const res = await fetch('/api/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url,
+          format: selectedFormat,
+          options: gatherOptions(),
+        }),
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data || !data.task_id) {
+        taskHint.textContent = data?.error || 'Could not start task.';
+        setStatus('error');
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = 'Start Download';
+        return;
+      }
+
+      currentTaskId = data.task_id;
+      taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} queued.`;
+      downloadBtn.textContent = 'Downloading...';
+
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(pollStatus, 1000);
+      await pollStatus();
+      await refreshTasks();
+    }
+
+    downloadBtn.addEventListener('click', startDownload);
+    openFolderBtn.addEventListener('click', openDownloadsFolder);
+    refreshTasksBtn.addEventListener('click', refreshTasks);
+
+    [outputTemplateInput, writeSubsInput, embedMetaInput, embedThumbInput, autoOpenInput, cookiesPathInput, rateLimitInput, retriesInput]
+      .forEach(el => el.addEventListener('change', savePrefs));
+
+    loadPrefs();
+    refreshTasks();
+    setConsole('Waiting for a download task...');
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AeroDL</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body data-theme="ocean">
+  <main class="app">
+    <header class="top">
+      <div>
+        <h1>AERODL</h1>
+        <p>yt-dlp extension</p>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button id="openFolderBtn" class="ghost">📁</button>
+        <button id="openOptions" class="ghost">⚙</button>
+      </div>
+    </header>
+
+    <section class="card">
+      <label for="url">URL</label>
+      <input id="url" type="text" placeholder="https://youtube.com/watch?v=..." />
+
+      <label for="format">Format</label>
+      <select id="format">
+        <option value="best_video">Best mixed (video+audio)</option>
+        <option value="mp4">MP4 priority</option>
+        <option value="webm">WebM priority</option>
+        <option value="audio_best">Audio MP3</option>
+        <option value="audio_opus">Audio Opus</option>
+        <option value="audio_wav">Audio WAV</option>
+      </select>
+
+      <div class="grid2">
+        <label class="toggle"><input id="writeSubs" type="checkbox" /> subs</label>
+        <label class="toggle"><input id="embedMeta" type="checkbox" /> metadata</label>
+        <label class="toggle"><input id="embedThumb" type="checkbox" /> thumb</label>
+        <label class="toggle"><input id="autoOpen" type="checkbox" checked /> auto-open</label>
+      </div>
+
+      <button id="downloadBtn" class="primary">Start Download</button>
+      <p id="hint" class="hint">Ready.</p>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <strong>Task History</strong>
+        <button id="refreshBtn" class="ghost small">refresh</button>
+      </div>
+      <div id="tasks" class="tasks"></div>
+    </section>
+
+    <section class="card">
+      <div class="row">
+        <strong>Console</strong>
+        <span id="status" class="status">idle</span>
+      </div>
+      <pre id="console" class="console">Waiting...</pre>
+    </section>
+
+    <footer class="themes">
+      <button class="swatch active" data-theme="ocean">Ocean</button>
+      <button class="swatch" data-theme="sunset">Sunset</button>
+      <button class="swatch" data-theme="matrix">Matrix</button>
+      <button class="swatch" data-theme="violet">Violet</button>
+    </footer>
+  </main>
+
+  <script src="popup.js"></script>
+</body>
+</html>

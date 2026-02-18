@@ -1,0 +1,5 @@
+yt-dlp-gui/downloads/
+*.mp4
+*.wav
+*.mkv
+*.webm
