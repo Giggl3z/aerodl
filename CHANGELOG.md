@@ -8,6 +8,19 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 - Changelog policy: every meaningful change should be recorded here.
+- Queue-based download execution with worker pool and configurable concurrency (Phase A).
+- New backend endpoints:
+  - `POST /api/cancel/<task_id>` (cancel queued/running tasks)
+  - `GET/POST /api/settings` (runtime concurrency + queue/runtime info)
+- Archive dedupe option (`--download-archive`) to skip already-downloaded IDs.
+
+### Changed
+- `/api/download` now enqueues tasks (`queued` status) instead of immediate direct execution.
+- Task status responses now include `queue_position` while queued.
+- Web UI advanced options now include “Skip duplicates (archive)”.
+
+### Fixed
+- Better queue visibility in UI status hint (shows queued position before running).
 
 ## [2026-02-18]
 

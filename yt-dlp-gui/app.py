@@ -12,13 +12,25 @@ from flask import Flask, request, jsonify, send_from_directory
 app = Flask(__name__, static_folder="static")
 
 LOG_MAX_LINES = 700
-MAX_TASKS = 120
+MAX_TASKS = 200
+MAX_CONCURRENCY_CAP = 4
+DEFAULT_CONCURRENCY = 2
+
 # Save downloads to local machine Downloads folder (outside workspace)
 DOWNLOAD_DIR = os.path.join(os.path.expanduser("~"), "Downloads", "PipeDL")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+ARCHIVE_FILE = os.path.join(DOWNLOAD_DIR, "pipedl_archive.txt")
 
-TASKS = {}
+TASKS: dict[str, dict] = {}
+TASK_QUEUE: list[str] = []
+ACTIVE_PROCS: dict[str, subprocess.Popen] = {}
+
 TASKS_LOCK = threading.Lock()
+QUEUE_COND = threading.Condition(TASKS_LOCK)
+
+WORKER_THREADS: list[threading.Thread] = []
+SHUTDOWN = False
+CURRENT_CONCURRENCY = DEFAULT_CONCURRENCY
 
 ALLOWED_FORMATS = {
     "best_video",
@@ -29,6 +41,8 @@ ALLOWED_FORMATS = {
     "audio_wav",
 }
 
+
+# ---------- Helpers ----------
 
 def now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
@@ -42,21 +56,26 @@ def is_probably_url(url: str) -> bool:
         return False
 
 
+def queue_position(task_id: str) -> int | None:
+    try:
+        return TASK_QUEUE.index(task_id) + 1
+    except ValueError:
+        return None
+
+
 def trim_tasks_if_needed() -> None:
     with TASKS_LOCK:
         if len(TASKS) <= MAX_TASKS:
             return
-        # Remove oldest finished/error first
+
         ordered = sorted(TASKS.items(), key=lambda kv: kv[1].get("created_at", ""))
         for task_id, task in ordered:
             if len(TASKS) <= MAX_TASKS:
                 break
-            if task.get("status") in ("done", "error"):
+            if task.get("status") in ("done", "error", "canceled"):
                 TASKS.pop(task_id, None)
-        # if still too many, remove oldest regardless
-        while len(TASKS) > MAX_TASKS:
-            oldest_id = min(TASKS, key=lambda tid: TASKS[tid].get("created_at", ""))
-            TASKS.pop(oldest_id, None)
+                if task_id in TASK_QUEUE:
+                    TASK_QUEUE.remove(task_id)
 
 
 def append_log(task: dict, line: str) -> None:
@@ -73,6 +92,10 @@ def to_rate_limit(rate: str) -> str:
     if re.fullmatch(r"\d+(\.\d+)?[KMG]?", rate):
         return rate
     return ""
+
+
+def running_count() -> int:
+    return sum(1 for t in TASKS.values() if t.get("status") == "running")
 
 
 def build_command(url: str, fmt: str, options: dict) -> list[str]:
@@ -118,16 +141,27 @@ def build_command(url: str, fmt: str, options: dict) -> list[str]:
     if retries.isdigit():
         cmd += ["--retries", retries]
 
+    # Dedupe previously downloaded IDs
+    if bool(options.get("useArchive", True)):
+        cmd += ["--download-archive", ARCHIVE_FILE]
+
     cmd += [url]
     return cmd
 
 
-def run_yt_dlp(task_id: str, url: str, fmt: str, options: dict):
+def run_yt_dlp(task_id: str):
     with TASKS_LOCK:
-        task = TASKS[task_id]
+        task = TASKS.get(task_id)
+        if not task:
+            return
+        url = task["url"]
+        fmt = task["format"]
+        options = task["options"]
 
     cmd = build_command(url, fmt, options)
-    append_log(task, f"$ {' '.join(cmd)}")
+
+    with TASKS_LOCK:
+        append_log(task, f"$ {' '.join(cmd)}")
 
     try:
         proc = subprocess.Popen(
@@ -140,16 +174,34 @@ def run_yt_dlp(task_id: str, url: str, fmt: str, options: dict):
         )
 
         with TASKS_LOCK:
+            task = TASKS.get(task_id)
+            if not task:
+                proc.terminate()
+                return
             task["pid"] = proc.pid
+            ACTIVE_PROCS[task_id] = proc
 
         assert proc.stdout is not None
         for line in proc.stdout:
-            append_log(task, line.rstrip("\n"))
+            with TASKS_LOCK:
+                task = TASKS.get(task_id)
+                if not task:
+                    continue
+                append_log(task, line.rstrip("\n"))
 
         proc.wait()
 
         with TASKS_LOCK:
-            if proc.returncode == 0:
+            ACTIVE_PROCS.pop(task_id, None)
+            task = TASKS.get(task_id)
+            if not task:
+                return
+
+            if task.get("status") == "canceled":
+                # Already marked by cancel endpoint
+                append_log(task, "")
+                append_log(task, "Task canceled by user.")
+            elif proc.returncode == 0:
                 task["status"] = "done"
                 task["finished_at"] = now_iso()
                 append_log(task, "")
@@ -164,15 +216,67 @@ def run_yt_dlp(task_id: str, url: str, fmt: str, options: dict):
             try:
                 os.startfile(DOWNLOAD_DIR)
             except Exception as e:
-                append_log(task, f"Could not open download folder: {e}")
+                with TASKS_LOCK:
+                    task = TASKS.get(task_id)
+                    if task:
+                        append_log(task, f"Could not open download folder: {e}")
 
     except Exception as e:
         with TASKS_LOCK:
-            task["status"] = "error"
+            ACTIVE_PROCS.pop(task_id, None)
+            task = TASKS.get(task_id)
+            if not task:
+                return
+            if task.get("status") != "canceled":
+                task["status"] = "error"
             task["finished_at"] = now_iso()
             append_log(task, "")
             append_log(task, f"Error running yt-dlp: {e}")
 
+
+# ---------- Queue workers ----------
+
+def queue_worker(worker_idx: int):
+    while True:
+        with QUEUE_COND:
+            while True:
+                if SHUTDOWN:
+                    return
+
+                if TASK_QUEUE and running_count() < CURRENT_CONCURRENCY:
+                    task_id = TASK_QUEUE.pop(0)
+                    task = TASKS.get(task_id)
+                    if not task:
+                        continue
+                    if task.get("status") != "queued":
+                        continue
+
+                    task["status"] = "running"
+                    task["started_at"] = now_iso()
+                    append_log(task, f"Worker {worker_idx} picked task.")
+                    break
+
+                QUEUE_COND.wait()
+
+        run_yt_dlp(task_id)
+
+        with QUEUE_COND:
+            QUEUE_COND.notify_all()
+
+
+def start_workers():
+    if WORKER_THREADS:
+        return
+    for i in range(MAX_CONCURRENCY_CAP):
+        t = threading.Thread(target=queue_worker, args=(i + 1,), daemon=True)
+        t.start()
+        WORKER_THREADS.append(t)
+
+
+start_workers()
+
+
+# ---------- API ----------
 
 @app.route("/")
 def index():
@@ -195,11 +299,12 @@ def api_download():
     task_id = str(uuid.uuid4())
     task = {
         "task_id": task_id,
-        "status": "running",
-        "log": [],
+        "status": "queued",
+        "log": ["Task queued."],
         "url": url,
         "format": fmt,
         "created_at": now_iso(),
+        "started_at": None,
         "finished_at": None,
         "pid": None,
         "options": {
@@ -207,6 +312,7 @@ def api_download():
             "embedMetadata": bool(options.get("embedMetadata")),
             "embedThumbnail": bool(options.get("embedThumbnail")),
             "autoOpenFolder": bool(options.get("autoOpenFolder", True)),
+            "useArchive": bool(options.get("useArchive", True)),
             "outputTemplate": (options.get("outputTemplate") or "").strip(),
             "cookiesPath": (options.get("cookiesPath") or "").strip(),
             "rateLimit": (options.get("rateLimit") or "").strip(),
@@ -214,15 +320,13 @@ def api_download():
         },
     }
 
-    with TASKS_LOCK:
+    with QUEUE_COND:
         TASKS[task_id] = task
+        TASK_QUEUE.append(task_id)
+        trim_tasks_if_needed()
+        QUEUE_COND.notify_all()
 
-    trim_tasks_if_needed()
-
-    t = threading.Thread(target=run_yt_dlp, args=(task_id, url, fmt, task["options"]), daemon=True)
-    t.start()
-
-    return jsonify({"task_id": task_id})
+    return jsonify({"task_id": task_id, "status": "queued", "queue_position": queue_position(task_id)})
 
 
 @app.route("/api/status/<task_id>", methods=["GET"])
@@ -231,14 +335,17 @@ def api_status(task_id):
         task = TASKS.get(task_id)
         if not task:
             return jsonify({"error": "Task not found"}), 404
+
         return jsonify(
             {
                 "task_id": task["task_id"],
                 "status": task["status"],
+                "queue_position": queue_position(task_id) if task["status"] == "queued" else None,
                 "log": task["log"],
                 "url": task["url"],
                 "format": task["format"],
                 "created_at": task["created_at"],
+                "started_at": task.get("started_at"),
                 "finished_at": task["finished_at"],
                 "pid": task["pid"],
             }
@@ -256,14 +363,86 @@ def api_tasks():
             {
                 "task_id": t["task_id"],
                 "status": t["status"],
+                "queue_position": queue_position(t["task_id"]) if t["status"] == "queued" else None,
                 "url": t["url"],
                 "format": t["format"],
                 "created_at": t["created_at"],
+                "started_at": t.get("started_at"),
                 "finished_at": t["finished_at"],
             }
-            for t in items[:40]
+            for t in items[:80]
         ]
     )
+
+
+@app.route("/api/cancel/<task_id>", methods=["POST"])
+def api_cancel(task_id):
+    with QUEUE_COND:
+        task = TASKS.get(task_id)
+        if not task:
+            return jsonify({"error": "Task not found"}), 404
+
+        status = task.get("status")
+        if status in ("done", "error", "canceled"):
+            return jsonify({"ok": True, "status": status})
+
+        if status == "queued":
+            if task_id in TASK_QUEUE:
+                TASK_QUEUE.remove(task_id)
+            task["status"] = "canceled"
+            task["finished_at"] = now_iso()
+            append_log(task, "Task canceled before start.")
+            QUEUE_COND.notify_all()
+            return jsonify({"ok": True, "status": "canceled"})
+
+        # running
+        task["status"] = "canceled"
+        task["finished_at"] = now_iso()
+        append_log(task, "Cancel requested. Stopping process...")
+
+        proc = ACTIVE_PROCS.get(task_id)
+        if proc and proc.poll() is None:
+            try:
+                proc.terminate()
+            except Exception:
+                pass
+
+        QUEUE_COND.notify_all()
+        return jsonify({"ok": True, "status": "canceled"})
+
+
+@app.route("/api/settings", methods=["GET", "POST"])
+def api_settings():
+    global CURRENT_CONCURRENCY
+
+    if request.method == "GET":
+        with TASKS_LOCK:
+            return jsonify(
+                {
+                    "concurrency": CURRENT_CONCURRENCY,
+                    "maxConcurrencyCap": MAX_CONCURRENCY_CAP,
+                    "running": running_count(),
+                    "queued": len(TASK_QUEUE),
+                    "downloadDir": DOWNLOAD_DIR,
+                    "archiveFile": ARCHIVE_FILE,
+                }
+            )
+
+    data = request.get_json(force=True) or {}
+    raw = data.get("concurrency")
+    try:
+        value = int(raw)
+    except Exception:
+        return jsonify({"error": "concurrency must be an integer"}), 400
+
+    if value < 1 or value > MAX_CONCURRENCY_CAP:
+        return jsonify({"error": f"concurrency must be between 1 and {MAX_CONCURRENCY_CAP}"}), 400
+
+    with QUEUE_COND:
+        CURRENT_CONCURRENCY = value
+        QUEUE_COND.notify_all()
+
+    return jsonify({"ok": True, "concurrency": CURRENT_CONCURRENCY})
 
 
 @app.route("/api/open-downloads", methods=["POST"])

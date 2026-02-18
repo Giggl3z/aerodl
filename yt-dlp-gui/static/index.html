@@ -478,6 +478,7 @@
               <label class="switch"><input type="checkbox" id="embed-meta" /> Embed metadata</label>
               <label class="switch"><input type="checkbox" id="embed-thumb" /> Embed thumbnail</label>
               <label class="switch"><input type="checkbox" id="auto-open" checked /> Auto-open folder on success</label>
+              <label class="switch"><input type="checkbox" id="use-archive" checked /> Skip duplicates (archive)</label>
             </div>
 
             <div class="field" style="margin-top:12px;">
@@ -546,6 +547,7 @@
     const embedMetaInput = document.getElementById('embed-meta');
     const embedThumbInput = document.getElementById('embed-thumb');
     const autoOpenInput = document.getElementById('auto-open');
+    const useArchiveInput = document.getElementById('use-archive');
     const cookiesPathInput = document.getElementById('cookies-path');
     const rateLimitInput = document.getElementById('rate-limit');
     const retriesInput = document.getElementById('retries');
@@ -571,6 +573,7 @@
         embedMetadata: embedMetaInput.checked,
         embedThumbnail: embedThumbInput.checked,
         autoOpenFolder: autoOpenInput.checked,
+        useArchive: useArchiveInput.checked,
         cookiesPath: cookiesPathInput.value.trim(),
         rateLimit: rateLimitInput.value.trim(),
         retries: retriesInput.value.trim(),
@@ -589,6 +592,7 @@
         embedMetaInput.checked = !!prefs.embedMetadata;
         embedThumbInput.checked = !!prefs.embedThumbnail;
         autoOpenInput.checked = prefs.autoOpenFolder !== false;
+        useArchiveInput.checked = prefs.useArchive !== false;
       } catch {}
     }
 
@@ -669,7 +673,10 @@
         setConsole(data.log.join('\n'));
       }
 
-      if (data.status === 'running') {
+      if (data.status === 'queued') {
+        const pos = data.queue_position ? ` (#${data.queue_position})` : '';
+        taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} queued${pos}...`;
+      } else if (data.status === 'running') {
         taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} running...`;
       } else if (data.status === 'done') {
         taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} finished.`;
@@ -734,7 +741,7 @@
     openFolderBtn.addEventListener('click', openDownloadsFolder);
     refreshTasksBtn.addEventListener('click', refreshTasks);
 
-    [outputTemplateInput, writeSubsInput, embedMetaInput, embedThumbInput, autoOpenInput, cookiesPathInput, rateLimitInput, retriesInput]
+    [outputTemplateInput, writeSubsInput, embedMetaInput, embedThumbInput, autoOpenInput, useArchiveInput, cookiesPathInput, rateLimitInput, retriesInput]
       .forEach(el => el.addEventListener('change', savePrefs));
 
     loadPrefs();
