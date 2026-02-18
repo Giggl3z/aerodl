@@ -1,37 +1,34 @@
-# PipeDL
+# PIPE DL
 
 <p align="left">
-  <img src="docs/assets/pipedl-logo-bold.svg" alt="PipeDL logo" width="560" />
+  <img src="docs/assets/pipedl-logo-bold.svg" alt="PipeDL logo" width="620" />
 </p>
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-2563EB)
 ![Brave Extension](https://img.shields.io/badge/Brave-MV3-F97316)
 ![License](https://img.shields.io/badge/License-MIT-16A34A)
 
-> A modern `yt-dlp` workflow with a polished web app, Brave extension, and YouTube in-page controls.
-
-PipeDL turns common CLI download tasks into a smoother UI flow while keeping `yt-dlp` power features available.
-
----
-
-## 📌 What PipeDL Does
-
-- Download videos/audio with presets (Best / MP4 / WebM / MP3 / Opus / WAV)
-- Queue multiple jobs with concurrency controls
-- Pick exact stream quality (`yt-dlp -F` style selection)
-- Track task history and live logs
-- Start downloads from:
-  - Web app
-  - Extension popup
-  - YouTube action-row button
+**PipeDL is a bold, modern `yt-dlp` workflow toolkit with:**
+- **Web app control panel**
+- **Brave extension popup**
+- **YouTube in-page action button**
 
 ---
 
-## 🧱 Repository Layout
+## WHY PIPE DL
+
+- **FAST START**: paste URL and download immediately
+- **POWER MODE**: exact quality selection + advanced flags
+- **QUEUE CONTROL**: queued/running visibility, concurrency, cancel
+- **LIVE FEEDBACK**: real-time logs + task history
+
+---
+
+## PROJECT STRUCTURE
 
 ```text
 .
-├─ yt-dlp-gui/                 # Flask backend + main web UI
+├─ yt-dlp-gui/                 # Flask backend + web UI
 │  ├─ app.py
 │  ├─ requirements.txt
 │  └─ static/
@@ -53,31 +50,22 @@ PipeDL turns common CLI download tasks into a smoother UI flow while keeping `yt
 
 ---
 
-## 📥 Get the project (Git)
-
-Clone PipeDL:
+## INSTALL (GIT)
 
 ```bash
 git clone https://github.com/Giggl3z/pipedl.git
 cd pipedl
 ```
 
-Update an existing local copy:
+Update later:
 
 ```bash
 git pull
 ```
 
-Quick pre-checks:
-
-```powershell
-python --version
-git --version
-```
-
 ---
 
-## ⚡ Quick Start (Recommended)
+## QUICK START
 
 ### 1) Setup once
 
@@ -91,60 +79,48 @@ powershell -ExecutionPolicy Bypass -File .\setup.ps1
 powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-### 3) Use it
+### 3) Open app
 
-- Open `http://localhost:5000`
-- Or open a YouTube video page and click **PipeDL** in action row
-
-Default output folder:
-
-- `C:\Users\<you>\Downloads\PipeDL`
+- **URL**: `http://localhost:5000`
+- **Output folder**: `C:\Users\<you>\Downloads\PipeDL`
 
 ---
 
-## 🧪 Manual Start (Alternative)
-
-```powershell
-cd yt-dlp-gui; python -m pip install -r requirements.txt; python app.py
-```
-
----
-
-## 🧩 Brave Extension Setup
+## BRAVE EXTENSION SETUP
 
 1. Open `brave://extensions`
 2. Enable **Developer mode**
 3. Click **Load unpacked**
-4. Select folder: `yt-dlp-brave-extension/`
+4. Select: `yt-dlp-brave-extension/`
 
-### Use it on YouTube
-
-1. Open a YouTube video page (`/watch` or `/shorts`)
+Then on YouTube:
+1. Open a video page (`/watch` or `/shorts`)
 2. Click **PipeDL** near Like/Share
-3. Choose format and start
-
-> If button does not appear: reload extension + refresh YouTube tab.
+3. Choose format and download
 
 ---
 
-## 🖥️ Web UI Guide
+## WEB UI MODES
 
-### Simple mode
-- Fast download flow
-- Minimal controls
+### SIMPLE MODE
+- Quick download flow
+- Minimal options
 
-### Pro mode
+### PRO MODE
 - Advanced options
 - Exact quality picker
-- Queue controls (stats, concurrency, cancel)
+- Queue controls (stats / concurrency / cancel)
 
-### Task system
-- Statuses: `queued`, `running`, `done`, `error`, `canceled`
-- Hover status chips for queue/timing details
+### TASK STATUSES
+- `queued`
+- `running`
+- `done`
+- `error`
+- `canceled`
 
 ---
 
-## 🔌 API Endpoints
+## API
 
 - `POST /api/download`
 - `POST /api/formats`
@@ -156,36 +132,36 @@ cd yt-dlp-gui; python -m pip install -r requirements.txt; python app.py
 
 ---
 
-## 📚 Documentation
+## DOCS
 
-- Setup → [`docs/SETUP.md`](docs/SETUP.md)
-- Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
-- Changelog → [`CHANGELOG.md`](CHANGELOG.md)
-- Release notes template → [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
-- Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
-- Security notes → [`SECURITY.md`](SECURITY.md)
-
----
-
-## ⚠️ Important Limitations
-
-- Browser extensions cannot run `yt-dlp` directly due to sandboxing.
-- The local backend (`yt-dlp-gui`) must be running for extension actions.
+- Setup: [`docs/SETUP.md`](docs/SETUP.md)
+- Troubleshooting: [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
+- Changelog: [`CHANGELOG.md`](CHANGELOG.md)
+- Release template: [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
+- Public release checklist: [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
+- Security notes: [`SECURITY.md`](SECURITY.md)
 
 ---
 
-## 🤝 Contributing
+## IMPORTANT LIMITATIONS
 
-- Use issue templates for bug/feature reports.
-- Keep PRs focused and testable.
-- Do not commit generated media or machine-specific artifacts.
+- Browser extensions cannot run `yt-dlp` directly (sandbox limitation).
+- Local backend (`yt-dlp-gui`) must be running for extension actions.
 
 ---
 
-## ⚖️ License
+## CONTRIBUTING
 
-MIT — see [`LICENSE`](LICENSE).
+- Use issue templates for bug/feature reports
+- Keep PRs focused and testable
+- Do not commit generated media or machine-specific artifacts
 
-## ✅ Responsible Use
+---
+
+## LICENSE
+
+MIT — see [`LICENSE`](LICENSE)
+
+## RESPONSIBLE USE
 
 Use PipeDL in compliance with platform Terms of Service and applicable laws.
