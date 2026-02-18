@@ -1,25 +1,35 @@
-# Troubleshooting
+# 🩺 Troubleshooting
 
-## "Fetch failed" from YouTube button
+Common issues and quick fixes.
 
-- Make sure backend is running:
-  ```bash
-  cd yt-dlp-gui
-  python app.py
-  ```
-- Check extension options backend URL (`http://localhost:5000`)
-- Reload extension in `brave://extensions`
-- Refresh YouTube page
+---
 
-## AeroDL button not visible on YouTube
+## ❌ "Fetch failed" when clicking AeroDL on YouTube
 
-- Confirm extension is enabled
-- Reload extension and YouTube tab
-- Verify you are on a video page (`/watch` or `/shorts`)
+1. Confirm backend is running:
+   ```bash
+   cd yt-dlp-gui
+   python app.py
+   ```
+2. In extension options, verify backend URL (`http://localhost:5000`)
+3. Reload extension in `brave://extensions`
+4. Refresh YouTube page
 
-## Push to GitHub fails due to large files
+---
 
-Add/update `.gitignore` to exclude media/downloads and re-commit cleanly:
+## 👀 AeroDL button not visible on YouTube
+
+- Ensure extension is enabled
+- Reload extension + refresh tab
+- Test on a valid video route (`/watch` or `/shorts`)
+
+---
+
+## 🚫 GitHub push rejected (large files)
+
+GitHub blocks big media files in commits/history.
+
+Make sure `.gitignore` includes:
 
 ```gitignore
 yt-dlp-gui/downloads/
@@ -29,21 +39,25 @@ yt-dlp-gui/downloads/
 *.webm
 ```
 
-If large files were committed previously, rewrite history or create a clean repo history before push.
+If files were already committed, rewrite history or create a clean repo history before pushing.
 
-## yt-dlp not found
+---
 
-Install via pip and restart backend:
+## 🐍 `yt-dlp` not found
+
+Install and restart backend:
 
 ```bash
 python -m pip install yt-dlp
 python app.py
 ```
 
-## Downloads path
+---
 
-Current project default:
+## 📂 Download location check
+
+Current default path:
 
 `C:\Users\<you>\Downloads\AeroDL`
 
-If needed, edit `yt-dlp-gui/app.py` (`DOWNLOAD_DIR`).
+Change it in `yt-dlp-gui/app.py` (`DOWNLOAD_DIR`) if needed.

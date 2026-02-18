@@ -1,38 +1,37 @@
-# AeroDL
+# 🚀 AeroDL
 
-AeroDL is a user-friendly YouTube downloader toolkit powered by `yt-dlp`.
+> A modern `yt-dlp` toolkit with a full web UI + Brave extension controls.
 
-This repository contains two parts:
-
-1. **`yt-dlp-gui/`** — local web app backend + full website UI
-2. **`yt-dlp-brave-extension/`** — Brave extension with YouTube in-page button/menu
+AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and YouTube-integrated actions.
 
 ---
 
-## What you get
+## ✨ Highlights
 
-- Download presets (Best/MP4/WebM/MP3/Opus/WAV)
-- Advanced `yt-dlp` options
-- Live console log preview
-- Task history
-- YouTube action-row button (AeroDL)
-- Brave popup controller
+- 🎬 Format presets: Best / MP4 / WebM / MP3 / Opus / WAV
+- ⚙️ Advanced `yt-dlp` options (subs, metadata, thumbnail, retries, rate limit)
+- 📜 Live console output
+- 🧾 Task history
+- ▶️ YouTube action-row **AeroDL** button with quick menu
+- 🧩 Brave popup controller + options page
 
 ---
 
-## Repository structure
+## 🧱 Project Structure
 
 ```text
 .
-├─ yt-dlp-gui/                 # Flask app + website UI
+├─ yt-dlp-gui/                 # Flask backend + full website UI
 │  ├─ app.py
+│  ├─ README.md
 │  └─ static/
-├─ yt-dlp-brave-extension/     # MV3 extension
+├─ yt-dlp-brave-extension/     # Brave MV3 extension
 │  ├─ manifest.json
 │  ├─ popup.html
 │  ├─ popup.js
 │  ├─ youtube-button.js
-│  └─ options.html
+│  ├─ options.html
+│  └─ README.md
 └─ docs/
    ├─ SETUP.md
    └─ TROUBLESHOOTING.md
@@ -40,7 +39,7 @@ This repository contains two parts:
 
 ---
 
-## Quick start
+## ⚡ Quick Start
 
 ### 1) Install dependencies
 
@@ -49,43 +48,47 @@ cd yt-dlp-gui
 python -m pip install flask yt-dlp
 ```
 
-### 2) Run local backend
+### 2) Start AeroDL backend
 
 ```bash
 python app.py
 ```
 
-By default, GUI is at:
-
-- `http://localhost:5000`
-
-Downloads are saved to:
-
-- `C:\Users\<you>\Downloads\AeroDL`
+- 🌐 GUI URL: `http://localhost:5000`
+- 📂 Download path: `C:\Users\<you>\Downloads\AeroDL`
 
 ### 3) Load Brave extension
 
 1. Open `brave://extensions`
 2. Enable **Developer mode**
 3. Click **Load unpacked**
-4. Select `yt-dlp-brave-extension/`
+4. Select folder: `yt-dlp-brave-extension/`
 
-### 4) Use it
+### 4) Download from YouTube
 
-- Open YouTube video page
-- Click **AeroDL** button near action row
-- Choose format and press **Download**
-
----
-
-## Documentation
-
-- Setup guide: [`docs/SETUP.md`](docs/SETUP.md)
-- Troubleshooting: [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
-- Extension notes: [`yt-dlp-brave-extension/README.md`](yt-dlp-brave-extension/README.md)
+1. Open a YouTube video page
+2. Click **AeroDL** near Like/Share buttons
+3. Pick a format and press **Download**
 
 ---
 
-## Safety / legal
+## 📚 Docs
 
-Use responsibly and comply with platform Terms of Service and local laws.
+- 🛠 Setup guide → [`docs/SETUP.md`](docs/SETUP.md)
+- 🩺 Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
+- 🧩 Extension notes → [`yt-dlp-brave-extension/README.md`](yt-dlp-brave-extension/README.md)
+- 🖥 GUI notes → [`yt-dlp-gui/README.md`](yt-dlp-gui/README.md)
+
+---
+
+## 🧠 Pro Tips
+
+- Keep backend running while using extension.
+- If YouTube button disappears after update, reload extension + refresh tab.
+- Avoid committing media files (`.mp4`, `.wav`, etc.) to GitHub.
+
+---
+
+## ⚠️ Legal / Responsible Use
+
+Use AeroDL responsibly and in compliance with platform Terms of Service and your local laws.

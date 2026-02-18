@@ -1,13 +1,19 @@
-# Setup Guide
+# 🛠 Setup Guide
 
-## Requirements
+Follow this once to get AeroDL running end-to-end.
+
+---
+
+## ✅ Requirements
 
 - Windows 10/11
 - Python 3.10+
 - Brave Browser
 - Internet connection
 
-## 1) Backend setup (`yt-dlp-gui`)
+---
+
+## 1) Start backend (`yt-dlp-gui`)
 
 ```bash
 cd yt-dlp-gui
@@ -15,32 +21,42 @@ python -m pip install flask yt-dlp
 python app.py
 ```
 
-Expected output: Flask running on `http://localhost:5000`.
+Expected: Flask server running at `http://localhost:5000`.
 
-## 2) Extension setup (`yt-dlp-brave-extension`)
+---
+
+## 2) Load extension (`yt-dlp-brave-extension`)
 
 1. Open `brave://extensions`
 2. Enable **Developer mode**
-3. **Load unpacked** → choose `yt-dlp-brave-extension`
-4. Pin extension if desired
+3. Click **Load unpacked**
+4. Choose `yt-dlp-brave-extension`
+5. (Optional) Pin the extension
 
-## 3) Optional: Set backend URL in extension
+---
+
+## 3) Configure backend URL (optional)
 
 - Open extension popup
-- Click gear icon (Options)
-- Set backend to `http://localhost:5000`
+- Click ⚙ (Options)
+- Set backend URL (default: `http://localhost:5000`)
 
-## 4) First test
+---
 
-1. Open any YouTube watch page
-2. Click the **AeroDL** button
-3. Pick format and click **Download**
+## 4) First download test
 
-If successful:
-- Download task starts
-- Files save to `Downloads\AeroDL`
+1. Open a YouTube video (`/watch` or `/shorts`)
+2. Click **AeroDL** near the action buttons
+3. Choose format
+4. Press **Download**
 
-## 5) Update dependencies
+Success behavior:
+- Task is queued
+- File saves to `Downloads\AeroDL`
+
+---
+
+## 5) Keep dependencies fresh
 
 ```bash
 cd yt-dlp-gui

@@ -1,31 +1,46 @@
-# yt-dlp-gui
+# 🖥️ AeroDL GUI (`yt-dlp-gui`)
 
-Local web backend and website UI for AeroDL.
+Local web backend + modern website UI for running `yt-dlp` with a clean interface.
 
-## Run
+---
+
+## ✨ Features
+
+- 🎬 Preset formats (Best, MP4, WebM, MP3, Opus, WAV)
+- ⚙️ Advanced flags (subs, metadata, thumbnail, retries, rate limit, output template)
+- 📜 Live console output
+- 🧾 Task history API
+- 📂 Open downloads folder endpoint
+
+---
+
+## ▶️ Run
 
 ```bash
 python -m pip install flask yt-dlp
 python app.py
 ```
 
-Open: `http://localhost:5000`
+Open in browser: `http://localhost:5000`
 
-## Features
+---
 
-- Format presets
-- Advanced options for `yt-dlp`
-- Live logs
-- Task history endpoint
-- Open downloads folder endpoint
-
-## API endpoints
+## 🔌 API Endpoints
 
 - `POST /api/download`
 - `GET /api/status/<task_id>`
 - `GET /api/tasks`
 - `POST /api/open-downloads`
 
-## Download location
+---
+
+## 📂 Download Location
 
 `C:\Users\<you>\Downloads\AeroDL`
+
+---
+
+## 🛠 Notes
+
+- Uses `python -m yt_dlp` internally
+- Keep this backend running while using the Brave extension
