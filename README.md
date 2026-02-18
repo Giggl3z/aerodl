@@ -1,44 +1,36 @@
-# 🧪 PipeDL
+# 🚀 PipeDL
 
-![PipeDL](https://img.shields.io/badge/Name-PipeDL-6D28D9)
+![Name](https://img.shields.io/badge/Name-PipeDL-6D28D9)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-2563EB)
 ![Brave Extension](https://img.shields.io/badge/Brave-MV3-F97316)
-![License: MIT](https://img.shields.io/badge/License-MIT-16A34A)
+![License](https://img.shields.io/badge/License-MIT-16A34A)
 
-> A smooth, modern `yt-dlp` experience — website UI + Brave extension + YouTube action button.
+> A modern `yt-dlp` workflow with a polished web app, Brave extension, and YouTube in-page controls.
 
-PipeDL brings CLI power into a cleaner workflow: choose preset, tweak options, launch, and monitor output in real time.
-
----
-
-## 🌊 PipeDL Flow
-
-1. Paste / open a YouTube video
-2. Pick format preset (Best, MP4, WebM, MP3, Opus, WAV)
-3. Start download
-4. Watch live logs + task history
-5. Grab files from `Downloads\PipeDL`
+PipeDL turns common CLI download tasks into a smoother UI flow while keeping `yt-dlp` power features available.
 
 ---
 
-## ✨ Features
+## 📌 What PipeDL Does
 
-- 🎬 Download presets: Best / MP4 / WebM / MP3 / Opus / WAV
-- ⚙️ Advanced options: subtitles, metadata, thumbnail, retries, rate limit
-- 📜 Live console output
-- 🧾 Task history tracking
-- ▶️ YouTube action-row **PipeDL** button + quick menu
-- 🧩 Brave popup controller + settings page
+- Download videos/audio with presets (Best / MP4 / WebM / MP3 / Opus / WAV)
+- Queue multiple jobs with concurrency controls
+- Pick exact stream quality (`yt-dlp -F` style selection)
+- Track task history and live logs
+- Start downloads from:
+  - Web app
+  - Extension popup
+  - YouTube action-row button
 
 ---
 
-## 🧱 Project Structure
+## 🧱 Repository Layout
 
 ```text
 .
-├─ yt-dlp-gui/                 # Flask backend + full website UI
+├─ yt-dlp-gui/                 # Flask backend + main web UI
 │  ├─ app.py
-│  ├─ README.md
+│  ├─ requirements.txt
 │  └─ static/
 ├─ yt-dlp-brave-extension/     # Brave MV3 extension
 │  ├─ manifest.json
@@ -47,80 +39,125 @@ PipeDL brings CLI power into a cleaner workflow: choose preset, tweak options, l
 │  ├─ youtube-button.js
 │  ├─ options.html
 │  └─ README.md
-└─ docs/
-   ├─ SETUP.md
-   └─ TROUBLESHOOTING.md
+├─ docs/
+│  ├─ SETUP.md
+│  ├─ TROUBLESHOOTING.md
+│  ├─ PUBLIC_RELEASE_CHECKLIST.md
+│  └─ RELEASE_TEMPLATE.md
+├─ CHANGELOG.md
+└─ LICENSE
 ```
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Quick Start (Recommended)
 
-### 1) One-time setup (one-liner)
+### 1) Setup once
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
 ```
 
-### 2) Start PipeDL (one-liner)
+### 2) Run PipeDL
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-Manual one-liner:
+Then open:
 
-```powershell
-cd yt-dlp-gui; python -m pip install flask yt-dlp; python app.py
-```
+- `http://localhost:5000`
 
-- 🌐 GUI: `http://localhost:5000`
-- 📂 Output folder: `C:\Users\<you>\Downloads\PipeDL`
+Default output folder:
+
+- `C:\Users\<you>\Downloads\PipeDL`
 
 ---
 
-## 🧩 Load Brave Extension
+## 🧪 Manual Start (Alternative)
+
+```powershell
+cd yt-dlp-gui; python -m pip install -r requirements.txt; python app.py
+```
+
+---
+
+## 🧩 Brave Extension Setup
 
 1. Open `brave://extensions`
 2. Enable **Developer mode**
 3. Click **Load unpacked**
-4. Select `yt-dlp-brave-extension/`
+4. Select folder: `yt-dlp-brave-extension/`
 
-Then on YouTube:
-1. Open a video page
+### Use it on YouTube
+
+1. Open a YouTube video page (`/watch` or `/shorts`)
 2. Click **PipeDL** near Like/Share
-3. Pick format + download
+3. Choose format and start
+
+> If button does not appear: reload extension + refresh YouTube tab.
 
 ---
 
-## 📚 Docs
+## 🖥️ Web UI Guide
 
-- 🛠 Setup guide → [`docs/SETUP.md`](docs/SETUP.md)
-- 🩺 Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
-- ✅ Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
-- 🧾 Release notes template → [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
-- 🗒 Changelog → [`CHANGELOG.md`](CHANGELOG.md)
-- 🧩 Extension notes → [`yt-dlp-brave-extension/README.md`](yt-dlp-brave-extension/README.md)
-- 🖥 GUI notes → [`yt-dlp-gui/README.md`](yt-dlp-gui/README.md)
-- 🔐 Security/Privacy → [`SECURITY.md`](SECURITY.md)
+### Simple mode
+- Fast download flow
+- Minimal controls
+
+### Pro mode
+- Advanced options
+- Exact quality picker
+- Queue controls (stats, concurrency, cancel)
+
+### Task system
+- Statuses: `queued`, `running`, `done`, `error`, `canceled`
+- Hover status chips for queue/timing details
 
 ---
 
-## ⚠️ Limitations
+## 🔌 API Endpoints
 
-- Browser extensions cannot run `yt-dlp` directly (sandbox restriction).
-- Local backend (`yt-dlp-gui`) must be running for extension actions.
+- `POST /api/download`
+- `POST /api/formats`
+- `GET /api/status/<task_id>`
+- `GET /api/tasks`
+- `POST /api/cancel/<task_id>`
+- `GET/POST /api/settings`
+- `POST /api/open-downloads`
+
+---
+
+## 📚 Documentation
+
+- Setup → [`docs/SETUP.md`](docs/SETUP.md)
+- Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
+- Changelog → [`CHANGELOG.md`](CHANGELOG.md)
+- Release notes template → [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
+- Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
+- Security notes → [`SECURITY.md`](SECURITY.md)
+
+---
+
+## ⚠️ Important Limitations
+
+- Browser extensions cannot run `yt-dlp` directly due to sandboxing.
+- The local backend (`yt-dlp-gui`) must be running for extension actions.
+
+---
 
 ## 🤝 Contributing
 
-- Use issue templates for bugs/features.
+- Use issue templates for bug/feature reports.
 - Keep PRs focused and testable.
-- Do not commit generated media or local machine artifacts.
+- Do not commit generated media or machine-specific artifacts.
+
+---
 
 ## ⚖️ License
 
 MIT — see [`LICENSE`](LICENSE).
 
-## ⚠️ Responsible Use
+## ✅ Responsible Use
 
-Use PipeDL in compliance with platform Terms of Service and local laws.
+Use PipeDL in compliance with platform Terms of Service and applicable laws.
