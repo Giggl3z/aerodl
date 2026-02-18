@@ -9,7 +9,7 @@
 ![License](https://img.shields.io/badge/License-MIT-16A34A)
 ![Status](https://img.shields.io/badge/Status-Active-22C55E)
 
-> **PipeDL** is a modern `yt-dlp` workflow suite with a web dashboard, Brave extension, and YouTube in-page controls.
+> **PipeDL** is a bold, modern `yt-dlp` toolkit: local web studio + Brave extension + YouTube in-page actions.
 
 ---
 
@@ -28,31 +28,31 @@ Open: **http://localhost:5000**
 
 ## ✨ Why PipeDL
 
-### ⚡ Fast by default
-- Paste URL → download immediately
-- Built-in presets (Best / MP4 / WebM / MP3 / Opus / WAV)
+### ⚡ Fast lane by default
+- Paste URL → run immediately
+- Presets built in: **Best / MP4 / WebM / MP3 / Opus / WAV**
 
-### 🎛️ Powerful when needed
+### 🎛️ Pro controls when you want them
 - Exact quality picker (`yt-dlp -F` style)
-- Advanced options (subs, metadata, thumbnail, retries, rate limit)
+- Advanced options (subs, metadata, thumbnail, retries, rate limit, cookies)
 
-### 📦 Queue-aware workflow
-- Queue + running visibility
-- Concurrency controls
-- Cancel queued/running tasks
+### 📦 Queue-first workflow
+- Live **queued/running** visibility
+- Runtime **concurrency** control
+- Cancel queued or running tasks
 
 ### 🧠 Feedback-first UI
-- Live logs
-- Task history
+- Real-time logs
+- Task history panel
 - Status chips + queue/timing tooltips
 
 ---
 
 ## 🧩 Product Surface
 
-- **Web App** (`yt-dlp-gui`) → full control center
-- **Brave Popup** (`yt-dlp-brave-extension`) → compact controller
-- **YouTube Action Button** → download from watch page directly
+- **Web Studio** (`yt-dlp-gui`) → full command center
+- **Brave Popup** (`yt-dlp-brave-extension`) → compact quick-control
+- **YouTube Action Button** → run downloads directly from watch pages
 
 ---
 
@@ -97,7 +97,7 @@ Run `python app.py` (or `run.ps1`) and keep terminal open.
 ### 3) Test from YouTube
 1. Open a video page (`/watch` or `/shorts`)
 2. Click **PipeDL** near Like/Share
-3. Select format and download
+3. Pick format and download
 
 Default output folder:
 - `C:\Users\<you>\Downloads\PipeDL`
@@ -108,7 +108,7 @@ Default output folder:
 
 ### Simple Mode
 - Minimal controls
-- Fast download path
+- Fastest path to download
 
 ### Pro Mode
 - Exact quality picker
