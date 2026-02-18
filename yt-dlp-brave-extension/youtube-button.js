@@ -111,17 +111,32 @@
         margin-left: 8px;
         border-radius: 18px;
         border: 1px solid rgba(255,255,255,.18);
-        padding: 0 14px;
+        padding: 0 12px;
         height: 36px;
-        min-width: 84px;
+        min-width: 92px;
         cursor: pointer;
         background: rgba(255,255,255,.08);
         color: #f1f1f1;
         font-weight: 500;
         font-size: 14px;
         font-family: Roboto, Arial, sans-serif;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         transition: transform .18s ease, background .15s ease, box-shadow .18s ease;
         animation: aerodlBtnIn .22s ease;
+      }
+      #${BUTTON_ID} .aerodl-btn-icon {
+        width: 16px;
+        height: 16px;
+        display: inline-block;
+      }
+      #${BUTTON_ID} .aerodl-btn-icon svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+        opacity: .95;
       }
       #${BUTTON_ID}:hover { background: rgba(255,255,255,.15); transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0,0,0,.26); }
       #${BUTTON_ID}.active { transform: translateY(-1px) scale(1.02); }
@@ -402,7 +417,14 @@
     const btn = document.createElement('button');
     btn.id = BUTTON_ID;
     btn.type = 'button';
-    btn.textContent = 'AeroDL';
+    btn.innerHTML = `
+      <span class="aerodl-btn-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+          <path d="M11 3h2v9.17l3.59-3.58L18 10l-6 6-6-6 1.41-1.41L11 12.17V3zm-7 14h16v2H4v-2z"></path>
+        </svg>
+      </span>
+      <span>AeroDL</span>
+    `;
 
     btn.addEventListener('click', () => {
       const existing = document.getElementById(MENU_ID);

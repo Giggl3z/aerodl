@@ -53,24 +53,22 @@ AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and Y
 
 ## ⚡ Quick Start
 
-### 1) One-time setup (recommended)
+### 1) One-time setup (recommended) — one-liner
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
 ```
 
-### 2) Start AeroDL backend
+### 2) Start AeroDL backend — one-liner
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-Manual alternative:
+Manual alternative (one-liner):
 
-```bash
-cd yt-dlp-gui
-python -m pip install flask yt-dlp
-python app.py
+```powershell
+cd yt-dlp-gui; python -m pip install flask yt-dlp; python app.py
 ```
 
 - 🌐 GUI URL: `http://localhost:5000`
