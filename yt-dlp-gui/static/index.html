@@ -407,6 +407,67 @@
 
     .tiny { font-size: 11px; color: var(--muted); }
 
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+
+    .modal {
+      width: min(980px, 96vw);
+      max-height: 88vh;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: linear-gradient(155deg, color-mix(in srgb, var(--panel) 88%, transparent), color-mix(in srgb, var(--panel-2) 95%, transparent));
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-body {
+      overflow: auto;
+      padding: 10px;
+    }
+
+    .formats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .formats-table th,
+    .formats-table td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .formats-table tr:hover {
+      background: color-mix(in srgb, var(--panel-2) 45%, transparent);
+    }
+
+    .formats-table .pick {
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 11px;
+    }
+
     @media (max-width: 980px) {
       .hero, .studio { grid-template-columns: 1fr; }
       .format-grid, .switches { grid-template-columns: 1fr; }
@@ -457,6 +518,10 @@
 
           <div class="field">
             <label>Format Presets</label>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;">
+              <span class="tiny" id="exact-format-hint">Using preset mode</span>
+              <button id="pick-format-btn" type="button">Pick Exact Quality</button>
+            </div>
             <div class="format-grid" id="format-grid">
               <button type="button" class="format-pill active" data-format="best_video"><strong>Best Mixed</strong><span>video+audio</span></button>
               <button type="button" class="format-pill" data-format="mp4"><strong>MP4 Priority</strong><span>h264+m4a</span></button>
@@ -517,6 +582,36 @@
       </article>
     </section>
 
+    <div id="formats-modal-backdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-label="Pick exact quality">
+        <div class="modal-head">
+          <div>
+            <strong>Pick Exact Quality</strong>
+            <div class="tiny" id="formats-meta">Loading formats…</div>
+          </div>
+          <button id="close-formats-btn" type="button">Close</button>
+        </div>
+        <div class="modal-body">
+          <table class="formats-table">
+            <thead>
+              <tr>
+                <th>Action</th>
+                <th>ID</th>
+                <th>Container</th>
+                <th>Resolution</th>
+                <th>Video</th>
+                <th>Audio</th>
+                <th>Bitrate</th>
+                <th>Size</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="formats-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div class="theme-row">
       <div class="tiny">Theme modes</div>
       <div class="swatches" id="swatches">
@@ -541,6 +636,12 @@
     const statusChip = document.getElementById('status-chip');
     const taskHint = document.getElementById('task-hint');
     const swatches = Array.from(document.querySelectorAll('.swatch'));
+    const pickFormatBtn = document.getElementById('pick-format-btn');
+    const exactFormatHint = document.getElementById('exact-format-hint');
+    const formatsModalBackdrop = document.getElementById('formats-modal-backdrop');
+    const formatsMeta = document.getElementById('formats-meta');
+    const formatsTbody = document.getElementById('formats-tbody');
+    const closeFormatsBtn = document.getElementById('close-formats-btn');
 
     const outputTemplateInput = document.getElementById('output-template');
     const writeSubsInput = document.getElementById('write-subs');
@@ -553,6 +654,7 @@
     const retriesInput = document.getElementById('retries');
 
     let selectedFormat = 'best_video';
+    let selectedExactFormat = '';
     let currentTaskId = null;
     let pollTimer = null;
 
@@ -577,6 +679,7 @@
         cookiesPath: cookiesPathInput.value.trim(),
         rateLimit: rateLimitInput.value.trim(),
         retries: retriesInput.value.trim(),
+        exactFormat: selectedExactFormat,
       };
     }
 
@@ -593,6 +696,8 @@
         embedThumbInput.checked = !!prefs.embedThumbnail;
         autoOpenInput.checked = prefs.autoOpenFolder !== false;
         useArchiveInput.checked = prefs.useArchive !== false;
+        selectedExactFormat = prefs.exactFormat || '';
+        exactFormatHint.textContent = selectedExactFormat ? `Exact format: ${selectedExactFormat}` : 'Using preset mode';
       } catch {}
     }
 
@@ -617,6 +722,8 @@
         formatButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedFormat = btn.dataset.format;
+        selectedExactFormat = '';
+        exactFormatHint.textContent = 'Using preset mode';
       });
     });
 
@@ -625,6 +732,90 @@
       advancedWrap.style.display = hidden ? 'block' : 'none';
       toggleAdvancedBtn.textContent = hidden ? 'Hide Advanced' : 'Advanced Options';
     });
+
+    function fmtBytes(v) {
+      if (!v || Number.isNaN(Number(v))) return '-';
+      const n = Number(v);
+      const units = ['B', 'KB', 'MB', 'GB'];
+      let i = 0;
+      let x = n;
+      while (x >= 1024 && i < units.length - 1) {
+        x /= 1024;
+        i += 1;
+      }
+      return `${x.toFixed(x >= 10 ? 0 : 1)} ${units[i]}`;
+    }
+
+    function closeFormatsModal() {
+      formatsModalBackdrop.style.display = 'none';
+      formatsModalBackdrop.setAttribute('aria-hidden', 'true');
+    }
+
+    async function openFormatsModal() {
+      const url = urlInput.value.trim();
+      if (!url) {
+        taskHint.textContent = 'Paste a URL first, then pick exact quality.';
+        return;
+      }
+
+      formatsModalBackdrop.style.display = 'flex';
+      formatsModalBackdrop.setAttribute('aria-hidden', 'false');
+      formatsMeta.textContent = 'Loading formats...';
+      formatsTbody.innerHTML = '<tr><td colspan="9">Fetching format list...</td></tr>';
+
+      try {
+        const res = await fetch('/api/formats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          formatsMeta.textContent = 'Failed to fetch formats';
+          formatsTbody.innerHTML = `<tr><td colspan="9">${data.error || 'Unknown error'}</td></tr>`;
+          return;
+        }
+
+        const title = data.title || 'Unknown title';
+        const uploader = data.uploader || 'Unknown uploader';
+        formatsMeta.textContent = `${title} — ${uploader}`;
+
+        const rows = Array.isArray(data.formats) ? data.formats : [];
+        if (!rows.length) {
+          formatsTbody.innerHTML = '<tr><td colspan="9">No formats available.</td></tr>';
+          return;
+        }
+
+        formatsTbody.innerHTML = '';
+        rows.forEach((f) => {
+          const tr = document.createElement('tr');
+          const isSelected = selectedExactFormat === f.format_id;
+          tr.innerHTML = `
+            <td><button class="pick" data-format-id="${f.format_id}">${isSelected ? 'Selected' : 'Use'}</button></td>
+            <td>${f.format_id || '-'}</td>
+            <td>${f.ext || '-'}</td>
+            <td>${f.resolution || '-'}</td>
+            <td>${f.vcodec || '-'}</td>
+            <td>${f.acodec || '-'}</td>
+            <td>${f.tbr ? Number(f.tbr).toFixed(0) + 'k' : '-'}</td>
+            <td>${fmtBytes(f.filesize)}</td>
+            <td>${f.note || f.display || '-'}</td>
+          `;
+
+          tr.querySelector('.pick').addEventListener('click', () => {
+            selectedExactFormat = f.format_id;
+            exactFormatHint.textContent = `Exact format: ${selectedExactFormat}`;
+            savePrefs();
+            closeFormatsModal();
+          });
+
+          formatsTbody.appendChild(tr);
+        });
+      } catch (err) {
+        formatsMeta.textContent = 'Failed to fetch formats';
+        formatsTbody.innerHTML = `<tr><td colspan="9">${err.message || err}</td></tr>`;
+      }
+    }
 
     async function openDownloadsFolder() {
       const res = await fetch('/api/open-downloads', { method: 'POST' });
@@ -740,6 +931,11 @@
     downloadBtn.addEventListener('click', startDownload);
     openFolderBtn.addEventListener('click', openDownloadsFolder);
     refreshTasksBtn.addEventListener('click', refreshTasks);
+    pickFormatBtn.addEventListener('click', openFormatsModal);
+    closeFormatsBtn.addEventListener('click', closeFormatsModal);
+    formatsModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === formatsModalBackdrop) closeFormatsModal();
+    });
 
     [outputTemplateInput, writeSubsInput, embedMetaInput, embedThumbInput, autoOpenInput, useArchiveInput, cookiesPathInput, rateLimitInput, retriesInput]
       .forEach(el => el.addEventListener('change', savePrefs));

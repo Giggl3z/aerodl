@@ -101,7 +101,10 @@ def running_count() -> int:
 def build_command(url: str, fmt: str, options: dict) -> list[str]:
     base_cmd = [sys.executable, "-m", "yt_dlp"]
 
-    if fmt == "best_video":
+    exact_format = (options.get("exactFormat") or "").strip()
+    if exact_format:
+        cmd = base_cmd + ["-f", exact_format]
+    elif fmt == "best_video":
         cmd = base_cmd + ["-f", "bestvideo+bestaudio/best"]
     elif fmt == "mp4":
         cmd = base_cmd + ["-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best"]
@@ -313,6 +316,7 @@ def api_download():
             "embedThumbnail": bool(options.get("embedThumbnail")),
             "autoOpenFolder": bool(options.get("autoOpenFolder", True)),
             "useArchive": bool(options.get("useArchive", True)),
+            "exactFormat": (options.get("exactFormat") or "").strip(),
             "outputTemplate": (options.get("outputTemplate") or "").strip(),
             "cookiesPath": (options.get("cookiesPath") or "").strip(),
             "rateLimit": (options.get("rateLimit") or "").strip(),
@@ -443,6 +447,85 @@ def api_settings():
         QUEUE_COND.notify_all()
 
     return jsonify({"ok": True, "concurrency": CURRENT_CONCURRENCY})
+
+
+@app.route("/api/formats", methods=["POST"])
+def api_formats():
+    data = request.get_json(force=True) or {}
+    url = (data.get("url") or "").strip()
+
+    if not url or not is_probably_url(url):
+        return jsonify({"error": "Valid URL is required"}), 400
+
+    cmd = [
+        sys.executable,
+        "-m",
+        "yt_dlp",
+        "--dump-json",
+        "--skip-download",
+        "--no-warnings",
+        "--no-playlist",
+        url,
+    ]
+
+    try:
+        proc = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=DOWNLOAD_DIR,
+            timeout=90,
+        )
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch formats: {e}"}), 500
+
+    if proc.returncode != 0:
+        err = (proc.stderr or proc.stdout or "yt-dlp failed").strip()
+        return jsonify({"error": err[:1000]}), 400
+
+    raw = (proc.stdout or "").strip().splitlines()
+    if not raw:
+        return jsonify({"error": "No format data returned"}), 400
+
+    import json as _json
+
+    try:
+        info = _json.loads(raw[0])
+    except Exception:
+        return jsonify({"error": "Could not parse format data"}), 500
+
+    formats = []
+    for f in info.get("formats", []):
+        fid = str(f.get("format_id") or "").strip()
+        if not fid:
+            continue
+        filesize = f.get("filesize") or f.get("filesize_approx")
+        formats.append(
+            {
+                "format_id": fid,
+                "ext": f.get("ext") or "",
+                "resolution": f.get("resolution") or (f"{f.get('width')}x{f.get('height')}" if f.get("width") and f.get("height") else "audio"),
+                "vcodec": f.get("vcodec") or "",
+                "acodec": f.get("acodec") or "",
+                "fps": f.get("fps"),
+                "tbr": f.get("tbr"),
+                "filesize": filesize,
+                "note": f.get("format_note") or "",
+                "display": f.get("format") or "",
+            }
+        )
+
+    # Most useful first (higher bitrate near top)
+    formats.sort(key=lambda x: (x.get("tbr") or 0), reverse=True)
+
+    return jsonify(
+        {
+            "title": info.get("title") or "",
+            "uploader": info.get("uploader") or "",
+            "duration": info.get("duration"),
+            "formats": formats,
+        }
+    )
 
 
 @app.route("/api/open-downloads", methods=["POST"])
