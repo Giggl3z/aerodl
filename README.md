@@ -15,11 +15,11 @@
 
 ## 🚀 Launch in 60 Seconds
 
-```bash
+```powershell
 git clone https://github.com/Giggl3z/pipedl.git
 cd pipedl
-powershell -ExecutionPolicy Bypass -File .\setup.ps1
-powershell -ExecutionPolicy Bypass -File .\run.ps1
+.\setup.ps1
+.\run.ps1
 ```
 
 Open: **http://localhost:5000**
@@ -59,6 +59,13 @@ Open: **http://localhost:5000**
 ## 📦 Install Options
 
 ### Option A — Recommended scripts
+
+```powershell
+.\setup.ps1
+.\run.ps1
+```
+
+Fallback (if script execution is blocked):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\setup.ps1
