@@ -13,7 +13,7 @@ It sends commands to your local backend (default: `http://localhost:5000`).
 
 ## 📁 Folder
 
-`C:\Users\KenPC\.openclaw\workspace\yt-dlp-brave-extension`
+`<repo-root>/yt-dlp-brave-extension`
 
 ---
 
@@ -31,7 +31,7 @@ It sends commands to your local backend (default: `http://localhost:5000`).
 In another terminal:
 
 ```bash
-cd C:\Users\KenPC\.openclaw\workspace\yt-dlp-gui
+cd <repo-root>/yt-dlp-gui
 python app.py
 ```
 
