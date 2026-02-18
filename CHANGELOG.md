@@ -13,11 +13,18 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - `POST /api/cancel/<task_id>` (cancel queued/running tasks)
   - `GET/POST /api/settings` (runtime concurrency + queue/runtime info)
 - Archive dedupe option (`--download-archive`) to skip already-downloaded IDs.
+- Exact quality picker backend endpoint: `POST /api/formats` (yt-dlp format discovery).
+- Exact quality picker modal in web UI with selectable `format_id`.
+- Post-download action selector (open folder / copy path / both / none).
+- Simple vs Pro UI mode toggle.
+- Quick copy-download-path action button.
 
 ### Changed
 - `/api/download` now enqueues tasks (`queued` status) instead of immediate direct execution.
 - Task status responses now include `queue_position` while queued.
 - Web UI advanced options now include “Skip duplicates (archive)”.
+- Download options now accept `exactFormat` for precise stream selection.
+- UI now persists mode and post-download behavior preferences.
 
 ### Fixed
 - Better queue visibility in UI status hint (shows queued position before running).

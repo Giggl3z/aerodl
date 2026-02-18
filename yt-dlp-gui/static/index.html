@@ -407,6 +407,29 @@
 
     .tiny { font-size: 11px; color: var(--muted); }
 
+    .toast {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      z-index: 99999;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--panel-2) 92%, black);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 12px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .15s ease, transform .15s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -484,6 +507,8 @@
       </div>
       <div class="actions">
         <button id="open-folder-btn">Open Downloads</button>
+        <button id="copy-path-btn">Copy Path</button>
+        <button id="toggle-mode-btn">Mode: Simple</button>
         <button id="toggle-advanced-btn">Advanced Options</button>
         <button class="btn-primary" id="download-btn">Start Download</button>
       </div>
@@ -544,6 +569,16 @@
               <label class="switch"><input type="checkbox" id="embed-thumb" /> Embed thumbnail</label>
               <label class="switch"><input type="checkbox" id="auto-open" checked /> Auto-open folder on success</label>
               <label class="switch"><input type="checkbox" id="use-archive" checked /> Skip duplicates (archive)</label>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+              <label for="post-action">Post-download action</label>
+              <select id="post-action">
+                <option value="open">Open downloads folder</option>
+                <option value="copy">Copy downloads path</option>
+                <option value="open_and_copy">Open folder + copy path</option>
+                <option value="none">Do nothing</option>
+              </select>
             </div>
 
             <div class="field" style="margin-top:12px;">
@@ -623,11 +658,15 @@
     </div>
   </div>
 
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <script>
     const formatButtons = Array.from(document.querySelectorAll('.format-pill'));
     const urlInput = document.getElementById('url');
     const downloadBtn = document.getElementById('download-btn');
     const openFolderBtn = document.getElementById('open-folder-btn');
+    const copyPathBtn = document.getElementById('copy-path-btn');
+    const toggleModeBtn = document.getElementById('toggle-mode-btn');
     const toggleAdvancedBtn = document.getElementById('toggle-advanced-btn');
     const refreshTasksBtn = document.getElementById('refresh-tasks-btn');
     const advancedWrap = document.getElementById('advanced-wrap');
@@ -649,14 +688,19 @@
     const embedThumbInput = document.getElementById('embed-thumb');
     const autoOpenInput = document.getElementById('auto-open');
     const useArchiveInput = document.getElementById('use-archive');
+    const postActionInput = document.getElementById('post-action');
     const cookiesPathInput = document.getElementById('cookies-path');
     const rateLimitInput = document.getElementById('rate-limit');
     const retriesInput = document.getElementById('retries');
+
+    const toastEl = document.getElementById('toast');
 
     let selectedFormat = 'best_video';
     let selectedExactFormat = '';
     let currentTaskId = null;
     let pollTimer = null;
+    let downloadDir = '';
+    let appMode = 'simple';
 
     function setStatus(state) {
       statusChip.className = `status-chip ${state}`;
@@ -668,14 +712,39 @@
       consoleEl.scrollTop = consoleEl.scrollHeight;
     }
 
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove('show'), 2200);
+    }
+
+    function applyMode(mode, save = true) {
+      appMode = mode === 'pro' ? 'pro' : 'simple';
+      toggleModeBtn.textContent = `Mode: ${appMode === 'pro' ? 'Pro' : 'Simple'}`;
+
+      const pro = appMode === 'pro';
+      toggleAdvancedBtn.style.display = pro ? '' : 'none';
+      pickFormatBtn.style.display = pro ? '' : 'none';
+
+      if (!pro) {
+        advancedWrap.style.display = 'none';
+      }
+
+      if (save) savePrefs();
+    }
+
     function gatherOptions() {
+      const postAction = postActionInput.value;
+      const shouldOpen = postAction === 'open' || postAction === 'open_and_copy';
       return {
         outputTemplate: outputTemplateInput.value.trim(),
         writeSubs: writeSubsInput.checked,
         embedMetadata: embedMetaInput.checked,
         embedThumbnail: embedThumbInput.checked,
-        autoOpenFolder: autoOpenInput.checked,
+        autoOpenFolder: shouldOpen && autoOpenInput.checked,
         useArchive: useArchiveInput.checked,
+        postAction,
         cookiesPath: cookiesPathInput.value.trim(),
         rateLimit: rateLimitInput.value.trim(),
         retries: retriesInput.value.trim(),
@@ -696,14 +765,17 @@
         embedThumbInput.checked = !!prefs.embedThumbnail;
         autoOpenInput.checked = prefs.autoOpenFolder !== false;
         useArchiveInput.checked = prefs.useArchive !== false;
+        postActionInput.value = prefs.postAction || 'open';
         selectedExactFormat = prefs.exactFormat || '';
         exactFormatHint.textContent = selectedExactFormat ? `Exact format: ${selectedExactFormat}` : 'Using preset mode';
+        applyMode(prefs.mode || 'simple', false);
       } catch {}
     }
 
     function savePrefs() {
       const prefs = {
         theme: document.body.getAttribute('data-theme') || 'ocean',
+        mode: appMode,
         ...gatherOptions(),
       };
       localStorage.setItem('pipedl_prefs', JSON.stringify(prefs));
@@ -817,6 +889,30 @@
       }
     }
 
+    async function refreshSettings() {
+      try {
+        const res = await fetch('/api/settings');
+        const data = await res.json().catch(() => ({}));
+        if (res.ok) {
+          downloadDir = data.downloadDir || '';
+        }
+      } catch {}
+    }
+
+    async function copyDownloadPath() {
+      if (!downloadDir) await refreshSettings();
+      if (!downloadDir) {
+        showToast('Download path not available yet');
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(downloadDir);
+        showToast(`Copied: ${downloadDir}`);
+      } catch {
+        showToast('Could not copy path');
+      }
+    }
+
     async function openDownloadsFolder() {
       const res = await fetch('/api/open-downloads', { method: 'POST' });
       const data = await res.json().catch(() => ({}));
@@ -871,6 +967,12 @@
         taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} running...`;
       } else if (data.status === 'done') {
         taskHint.textContent = `Task ${currentTaskId.slice(0, 8)} finished.`;
+        const postAction = postActionInput.value;
+        if (postAction === 'copy' || postAction === 'open_and_copy') {
+          await copyDownloadPath();
+        } else {
+          showToast('Download finished ✅');
+        }
         downloadBtn.disabled = false;
         downloadBtn.textContent = 'Start Download';
         clearInterval(pollTimer);
@@ -930,6 +1032,8 @@
 
     downloadBtn.addEventListener('click', startDownload);
     openFolderBtn.addEventListener('click', openDownloadsFolder);
+    copyPathBtn.addEventListener('click', copyDownloadPath);
+    toggleModeBtn.addEventListener('click', () => applyMode(appMode === 'pro' ? 'simple' : 'pro'));
     refreshTasksBtn.addEventListener('click', refreshTasks);
     pickFormatBtn.addEventListener('click', openFormatsModal);
     closeFormatsBtn.addEventListener('click', closeFormatsModal);
@@ -937,10 +1041,12 @@
       if (e.target === formatsModalBackdrop) closeFormatsModal();
     });
 
-    [outputTemplateInput, writeSubsInput, embedMetaInput, embedThumbInput, autoOpenInput, useArchiveInput, cookiesPathInput, rateLimitInput, retriesInput]
+    [outputTemplateInput, writeSubsInput, embedMetaInput, embedThumbInput, autoOpenInput, useArchiveInput, postActionInput, cookiesPathInput, rateLimitInput, retriesInput]
       .forEach(el => el.addEventListener('change', savePrefs));
 
     loadPrefs();
+    applyMode(appMode, false);
+    refreshSettings();
     refreshTasks();
     setConsole('Waiting for a download task...');
   </script>
