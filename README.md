@@ -194,13 +194,6 @@ Default output folder:
 
 ---
 
-## ⚠️ Important Limitations
-
-- Browser extensions cannot execute `yt-dlp` directly (sandbox restriction).
-- Local backend (`yt-dlp-gui`) must be running for extension actions.
-
----
-
 ## 🤝 Contributing
 
 - Use issue templates for bug/feature reports
@@ -216,3 +209,8 @@ MIT - see [`LICENSE`](LICENSE)
 ## ✅ Responsible Use
 
 Use PipeDL in compliance with platform Terms of Service and applicable laws.
+
+#### ⚠️ Important limitations
+
+- Browser extensions cannot execute `yt-dlp` directly (sandbox restriction).
+- Local backend (`yt-dlp-gui`) must be running for extension actions.
