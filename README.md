@@ -43,14 +43,6 @@ AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and Y
 
 ---
 
-## 🖼 Screenshots (add your own)
-
-> Tip: add images under `docs/assets/` and reference them here.
-
-- Web UI screenshot → `docs/assets/web-ui.png`
-- YouTube menu screenshot → `docs/assets/youtube-menu.png`
-- Extension popup screenshot → `docs/assets/extension-popup.png`
-
 ## ⚡ Quick Start
 
 ### 1) One-time setup (recommended) — one-liner
