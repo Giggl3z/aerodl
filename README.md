@@ -140,47 +140,6 @@ Default output folder:
 
 ---
 
-#### 🔌 API endpoints
-
-- `POST /api/download`
-- `POST /api/formats`
-- `GET /api/status/<task_id>`
-- `GET /api/tasks`
-- `POST /api/cancel/<task_id>`
-- `POST /api/retry-failed`
-- `GET/POST /api/settings`
-- `POST /api/open-downloads`
-
----
-
-#### 🗂️ Repository structure
-
-```text
-.
-├─ yt-dlp-gui/                 # Flask backend + web UI
-│  ├─ app.py
-│  ├─ requirements.txt
-│  └─ static/
-├─ yt-dlp-brave-extension/     # Brave MV3 extension
-│  ├─ manifest.json
-│  ├─ popup.html
-│  ├─ popup.js
-│  ├─ youtube-button.js
-│  ├─ options.html
-│  └─ README.md
-├─ docs/
-│  ├─ SETUP.md
-│  ├─ TROUBLESHOOTING.md
-│  ├─ ARCHITECTURE.md
-│  ├─ FAQ.md
-│  ├─ PUBLIC_RELEASE_CHECKLIST.md
-│  └─ RELEASE_TEMPLATE.md
-├─ CHANGELOG.md
-└─ LICENSE
-```
-
----
-
 ## 📚 Documentation
 
 - Setup → [`docs/SETUP.md`](docs/SETUP.md)
@@ -210,7 +169,52 @@ MIT - see [`LICENSE`](LICENSE)
 
 Use PipeDL in compliance with platform Terms of Service and applicable laws.
 
-#### ⚠️ Important limitations
+---
+
+## ℹ️ Compact Reference
+
+<sub>
+
+### API endpoints
+
+- `POST /api/download`
+- `POST /api/formats`
+- `GET /api/status/<task_id>`
+- `GET /api/tasks`
+- `POST /api/cancel/<task_id>`
+- `POST /api/retry-failed`
+- `GET/POST /api/settings`
+- `POST /api/open-downloads`
+
+### Repository structure
+
+```text
+.
+├─ yt-dlp-gui/                 # Flask backend + web UI
+│  ├─ app.py
+│  ├─ requirements.txt
+│  └─ static/
+├─ yt-dlp-brave-extension/     # Brave MV3 extension
+│  ├─ manifest.json
+│  ├─ popup.html
+│  ├─ popup.js
+│  ├─ youtube-button.js
+│  ├─ options.html
+│  └─ README.md
+├─ docs/
+│  ├─ SETUP.md
+│  ├─ TROUBLESHOOTING.md
+│  ├─ ARCHITECTURE.md
+│  ├─ FAQ.md
+│  ├─ PUBLIC_RELEASE_CHECKLIST.md
+│  └─ RELEASE_TEMPLATE.md
+├─ CHANGELOG.md
+└─ LICENSE
+```
+
+### Important limitations
 
 - Browser extensions cannot execute `yt-dlp` directly (sandbox restriction).
 - Local backend (`yt-dlp-gui`) must be running for extension actions.
+
+</sub>
