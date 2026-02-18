@@ -135,7 +135,11 @@
       #${BUTTON_ID} .aerodl-btn-icon svg {
         width: 16px;
         height: 16px;
-        fill: currentColor;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
         opacity: .95;
       }
       #${BUTTON_ID}:hover { background: rgba(255,255,255,.15); transform: translateY(-1px); box-shadow: 0 8px 18px rgba(0,0,0,.26); }
@@ -420,7 +424,9 @@
     btn.innerHTML = `
       <span class="aerodl-btn-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-          <path d="M11 3h2v9.17l3.59-3.58L18 10l-6 6-6-6 1.41-1.41L11 12.17V3zm-7 14h16v2H4v-2z"></path>
+          <path d="M12 4v10"></path>
+          <path d="M8.5 10.8 12 14.3l3.5-3.5"></path>
+          <path d="M4.5 18h15"></path>
         </svg>
       </span>
       <span>AeroDL</span>
