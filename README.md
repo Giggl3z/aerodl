@@ -6,7 +6,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-2563EB) ![Brave Extension](https://img.shields.io/badge/Brave-MV3-F97316) ![License](https://img.shields.io/badge/License-MIT-16A34A) ![Status](https://img.shields.io/badge/Status-Active-22C55E)
 
-> **PipeDL** is a framework to orchestrate `yt-dlp` workflows across a local web app, browser extension, and in-page actions-turning raw download commands into a queue-driven, user-friendly media pipeline.
+> **PipeDL** is a framework to run, manage, and automate `yt-dlp` downloads through a unified UI and extension workflow.
 
 ---
 
