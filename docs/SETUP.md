@@ -1,10 +1,10 @@
-# 🛠 PipeDL Setup Guide
+# PipeDL Setup Guide
 
 Use this guide for a clean first-time setup on Windows.
 
 ---
 
-## ✅ Requirements
+## Requirements
 
 - Windows 10/11
 - Python 3.10+
@@ -27,20 +27,28 @@ If Python or Git is missing:
 
 ## 0) Clone repository
 
-```bash
+```powershell
 git clone https://github.com/Giggl3z/pipedl.git
 cd pipedl
 ```
 
 To update later:
 
-```bash
+```powershell
 git pull
 ```
 
 ---
 
-## 1) Install backend dependencies
+## 1) Install dependencies
+
+```powershell
+.\setup.ps1
+```
+
+During setup, PipeDL asks whether `pipedl-server` should auto-start at login.
+
+Manual path:
 
 ```powershell
 cd yt-dlp-gui
@@ -50,38 +58,57 @@ python -m pip install -r requirements.txt
 
 ---
 
-## 2) Start backend
+## 2) Choose how to run
+
+### Option A: Standard backend (terminal)
 
 ```powershell
-python app.py
+.\run.ps1
 ```
 
-Expected:
-- Web app at `http://localhost:5000`
-- Downloads saved to `C:\Users\<you>\Downloads\PipeDL`
+### Option B: `pipedl-server` app (recommended)
 
-Keep this terminal running while using extension/YouTube button.
+```powershell
+.\run-tray.ps1
+```
+
+What `pipedl-server` gives you:
+- always-on tray icon
+- server online/offline status
+- start/shutdown server button
+- console log viewer
+
+Auto-start controls:
+
+```powershell
+.\install-tray-autostart.ps1
+.\uninstall-tray-autostart.ps1
+```
 
 ---
 
 ## 3) Load extension in Brave
 
 1. Open `brave://extensions`
-2. Turn on **Developer mode**
+2. Enable **Developer mode**
 3. Click **Load unpacked**
 4. Select folder: `yt-dlp-brave-extension`
 
-Optional: Pin extension icon in Brave toolbar.
+Optional: pin extension icon in Brave toolbar.
 
 ---
 
 ## 4) Configure extension
 
-- Open extension popup
+- Open popup
 - Click ⚙ Options
-- Backend URL should be: `http://localhost:5000`
+- Backend URL should be `http://localhost:5000`
 
-If backend runs elsewhere, update URL accordingly.
+The popup now shows live backend status:
+- `server: online`
+- `server: offline`
+
+When offline, backend actions are disabled until server is up.
 
 ---
 
@@ -89,18 +116,18 @@ If backend runs elsewhere, update URL accordingly.
 
 ### Test from web UI
 1. Open `http://localhost:5000`
-2. Paste YouTube URL
+2. Paste URL
 3. Click **Start Download**
 
 ### Test from YouTube page
-1. Open any YouTube video (`/watch` or `/shorts`)
+1. Open a video page (`/watch` or `/shorts`)
 2. Click **PipeDL** in action row
-3. Pick format, click **Download**
+3. Pick format and download
 
 Success signs:
-- Task status changes `queued → running → done`
-- Console logs update in real-time
-- File appears in `Downloads\PipeDL`
+- task status moves `queued -> running -> done`
+- console logs update live
+- file appears in `C:\Users\<you>\Downloads\PipeDL`
 
 ---
 
@@ -108,24 +135,29 @@ Success signs:
 
 ### Restart backend
 ```powershell
-# in backend terminal
+# if running in terminal
 Ctrl + C
-python app.py
+.\run.ps1
 ```
 
-### Update dependencies later
-```powershell
-cd yt-dlp-gui
-python -m pip install --upgrade -r requirements.txt
-```
-
-### Re-load extension after code changes
-- Go to `brave://extensions`
-- Click **Reload** on PipeDL extension
+### Reload extension after code changes
+- Open `brave://extensions`
+- Click **Reload** on PipeDL
 - Refresh YouTube tab
 
 ---
 
-## 🧯 If something fails
+## 7) API quick reference
 
-Use: [`docs/TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
+- `POST /api/download`
+- `POST /api/formats`
+- `GET /api/status/<task_id>`
+- `GET /api/tasks`
+- `POST /api/cancel/<task_id>`
+- `POST /api/retry-failed`
+- `GET/POST /api/settings`
+- `POST /api/open-downloads`
+
+---
+
+If something fails, use: [`docs/TROUBLESHOOTING.md`](TROUBLESHOOTING.md)

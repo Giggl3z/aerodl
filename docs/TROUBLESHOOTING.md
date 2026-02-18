@@ -1,69 +1,98 @@
-# 🩺 PipeDL Troubleshooting
+# PipeDL Troubleshooting
 
 Common issues and quick fixes.
 
 ---
 
-## ❌ "Fetch failed" from YouTube button or popup
+## Extension says server offline
 
-1. Make sure backend is running:
-   ```powershell
-   cd yt-dlp-gui
-   python app.py
-   ```
-2. Open extension options and verify backend URL (`http://localhost:5000`)
-3. Reload extension in `brave://extensions`
-4. Refresh YouTube tab
+Symptoms:
+- popup chip shows `server: offline`
+- download/open/refresh controls are disabled
+
+Fix:
+1. Start backend (`.\run.ps1`) or start `pipedl-server` (`.\run-tray.ps1`)
+2. Verify `http://localhost:5000` opens in browser
+3. Ensure extension backend URL is correct in options
 
 ---
 
-## 👀 PipeDL button not visible on YouTube
+## pipedl-server shows ONLINE (external instance)
 
-- Ensure extension is enabled
-- Reload extension + refresh video tab
+Meaning:
+- backend is running, but not launched by `pipedl-server`
+
+Behavior:
+- status is accurate
+- tray app won’t stop unmanaged process
+
+If you want full tray control:
+1. stop external backend process
+2. click start inside `pipedl-server`
+
+---
+
+## PipeDL button missing on YouTube
+
+- Confirm extension is enabled in `brave://extensions`
+- Reload extension and refresh YouTube page
 - Test on valid routes: `/watch` or `/shorts`
 
 ---
 
-## ⏳ Task stuck in queued
+## Task stuck in queued
 
-- Increase concurrency in web UI (Queue Controls)
-- Check if a running task is hung, then cancel it
+- Increase concurrency from web UI
+- Cancel hung running task
+- Retry failed tasks (`Retry Failed` button)
 - Restart backend if needed
 
 ---
 
-## 🐍 `yt-dlp` not found / command fails
+## Download starts but fails
+
+- Update yt-dlp:
 
 ```powershell
+cd yt-dlp-gui
 python -m pip install --upgrade yt-dlp
 ```
 
-Restart backend after update.
+- Re-run backend and try again
+- Check cookies path if target requires login
 
 ---
 
-## 🚫 GitHub push rejected (large media files)
+## Scripts blocked by PowerShell policy
 
-Do not commit downloaded media.
-Ensure `.gitignore` includes:
+Use explicit bypass:
 
-```gitignore
-yt-dlp-gui/downloads/
-*.mp4
-*.wav
-*.mkv
-*.webm
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
+powershell -ExecutionPolicy Bypass -File .\run.ps1
 ```
 
-If large files were already committed, clean history before pushing.
+---
+
+## Startup task didn’t install
+
+Run as the same user who will use PipeDL and retry:
+
+```powershell
+.\install-tray-autostart.ps1
+```
+
+To remove:
+
+```powershell
+.\uninstall-tray-autostart.ps1
+```
 
 ---
 
-## 📂 Wrong output folder
+## Wrong output folder
 
-Default output path:
-
+Default:
 `C:\Users\<you>\Downloads\PipeDL`
 
-To change it, edit `yt-dlp-gui/app.py` (`DOWNLOAD_DIR`) and restart backend.
+To change it, edit `yt-dlp-gui/app.py` (`DOWNLOAD_DIR`) and restart.

@@ -147,6 +147,7 @@ Default output folder:
 - `GET /api/status/<task_id>`
 - `GET /api/tasks`
 - `POST /api/cancel/<task_id>`
+- `POST /api/retry-failed`
 - `GET/POST /api/settings`
 - `POST /api/open-downloads`
 
