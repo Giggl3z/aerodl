@@ -87,6 +87,7 @@ cd yt-dlp-gui; python -m pip install flask yt-dlp; python app.py
 - 🩺 Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
 - ✅ Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
 - 🧾 Release notes template → [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
+- 🗒 Changelog → [`CHANGELOG.md`](CHANGELOG.md)
 - 🧩 Extension notes → [`yt-dlp-brave-extension/README.md`](yt-dlp-brave-extension/README.md)
 - 🖥 GUI notes → [`yt-dlp-gui/README.md`](yt-dlp-gui/README.md)
 - 🔐 Security/Privacy → [`SECURITY.md`](SECURITY.md)
