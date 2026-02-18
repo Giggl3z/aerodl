@@ -76,8 +76,10 @@ python app.py
 
 - 🛠 Setup guide → [`docs/SETUP.md`](docs/SETUP.md)
 - 🩺 Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
+- ✅ Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
 - 🧩 Extension notes → [`yt-dlp-brave-extension/README.md`](yt-dlp-brave-extension/README.md)
 - 🖥 GUI notes → [`yt-dlp-gui/README.md`](yt-dlp-gui/README.md)
+- 🔐 Security/Privacy → [`SECURITY.md`](SECURITY.md)
 
 ---
 
@@ -88,6 +90,15 @@ python app.py
 - Avoid committing media files (`.mp4`, `.wav`, etc.) to GitHub.
 
 ---
+
+## ⚠️ Limitations
+
+- The Brave extension cannot execute `yt-dlp` directly due to browser sandboxing.
+- A local backend (`yt-dlp-gui`) must be running for extension actions.
+
+## ⚖️ License
+
+This project is licensed under the MIT License. See [`LICENSE`](LICENSE).
 
 ## ⚠️ Legal / Responsible Use
 
