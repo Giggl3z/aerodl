@@ -39,7 +39,6 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Top toolbar is now sticky with glass styling for easier access while scrolling.
 - Root README copy/style refreshed to better match the bold PipeDL brand tone while keeping structure intact.
 - README top section polished (hero line, compact badge row, stronger launch CTA copy).
-- README layout simplified to a minimal style (reduced branding visuals, cleaner sections, concise copy).
 
 ### Fixed
 - Fixed queue deadlock in `/api/download` caused by nested locking during task trimming.
