@@ -92,6 +92,9 @@ class PipeDLTrayApp:
     def start_server(self):
         if self.server_proc and self.server_proc.poll() is None:
             return
+        if self.is_server_up():
+            # Another server instance is already running (likely external/manual)
+            return
 
         self.server_log_handle = open(LOG_PATH, "a", encoding="utf-8")
         self.server_proc = subprocess.Popen(
@@ -124,20 +127,35 @@ class PipeDLTrayApp:
             self.server_log_handle = None
 
     def toggle_server(self, *args):
-        if self.is_server_up() or (self.server_proc and self.server_proc.poll() is None):
+        managed_running = self.server_proc and self.server_proc.poll() is None
+        external_running = self.is_server_up() and not managed_running
+
+        if managed_running:
             self.stop_server()
+        elif external_running:
+            # External server is running; tray cannot safely stop what it didn't start.
+            self.show_window()
         else:
             self.start_server()
+
         self.update_status_once()
 
     def update_status_once(self):
         up = self.is_server_up()
-        if up:
-            self.status_var.set("Server: ONLINE")
+        managed_running = self.server_proc and self.server_proc.poll() is None
+
+        if up and managed_running:
+            self.status_var.set("Server: ONLINE (managed by tray)")
             self.toggle_var.set("Shutdown Server")
+            self.toggle_btn.configure(state="normal")
+        elif up:
+            self.status_var.set("Server: ONLINE (external instance)")
+            self.toggle_var.set("Server running externally")
+            self.toggle_btn.configure(state="disabled")
         else:
             self.status_var.set("Server: OFFLINE")
             self.toggle_var.set("Start Server")
+            self.toggle_btn.configure(state="normal")
 
     def poll_status_loop(self):
         while self.running:
