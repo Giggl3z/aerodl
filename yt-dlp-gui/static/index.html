@@ -1076,7 +1076,11 @@
           canceled: '⛔',
         };
         const icon = statusIconMap[t.status] || '•';
-        status.innerHTML = `<span class="status-chip ${t.status}">${icon} ${t.status}</span>`;
+        const started = t.started_at || '-';
+        const finished = t.finished_at || '-';
+        const qPos = t.queue_position || '-';
+        const tip = `status: ${t.status}\nqueue: ${qPos}\nstarted: ${started}\nfinished: ${finished}`;
+        status.innerHTML = `<span class="status-chip ${t.status}" title="${tip}">${icon} ${t.status}</span>`;
 
         const actions = document.createElement('div');
         if (t.status === 'queued' || t.status === 'running') {
