@@ -1,5 +1,9 @@
 # 🚀 AeroDL
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Brave Extension](https://img.shields.io/badge/Brave-MV3-orange)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 > A modern `yt-dlp` toolkit with a full web UI + Brave extension controls.
 
 AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and YouTube-integrated actions.
@@ -39,18 +43,33 @@ AeroDL makes `yt-dlp` easier to use with a clean interface, quick presets, and Y
 
 ---
 
+## 🖼 Screenshots (add your own)
+
+> Tip: add images under `docs/assets/` and reference them here.
+
+- Web UI screenshot → `docs/assets/web-ui.png`
+- YouTube menu screenshot → `docs/assets/youtube-menu.png`
+- Extension popup screenshot → `docs/assets/extension-popup.png`
+
 ## ⚡ Quick Start
 
-### 1) Install dependencies
+### 1) One-time setup (recommended)
 
-```bash
-cd yt-dlp-gui
-python -m pip install flask yt-dlp
+```powershell
+powershell -ExecutionPolicy Bypass -File .\setup.ps1
 ```
 
 ### 2) Start AeroDL backend
 
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run.ps1
+```
+
+Manual alternative:
+
 ```bash
+cd yt-dlp-gui
+python -m pip install flask yt-dlp
 python app.py
 ```
 
@@ -77,6 +96,7 @@ python app.py
 - 🛠 Setup guide → [`docs/SETUP.md`](docs/SETUP.md)
 - 🩺 Troubleshooting → [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
 - ✅ Public release checklist → [`docs/PUBLIC_RELEASE_CHECKLIST.md`](docs/PUBLIC_RELEASE_CHECKLIST.md)
+- 🧾 Release notes template → [`docs/RELEASE_TEMPLATE.md`](docs/RELEASE_TEMPLATE.md)
 - 🧩 Extension notes → [`yt-dlp-brave-extension/README.md`](yt-dlp-brave-extension/README.md)
 - 🖥 GUI notes → [`yt-dlp-gui/README.md`](yt-dlp-gui/README.md)
 - 🔐 Security/Privacy → [`SECURITY.md`](SECURITY.md)
@@ -95,6 +115,12 @@ python app.py
 
 - The Brave extension cannot execute `yt-dlp` directly due to browser sandboxing.
 - A local backend (`yt-dlp-gui`) must be running for extension actions.
+
+## 🤝 Contributing
+
+- Open bugs with the built-in issue templates.
+- Keep PRs focused and include reproduction/test notes.
+- Avoid committing generated media or local machine artifacts.
 
 ## ⚖️ License
 
