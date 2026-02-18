@@ -1,19 +1,13 @@
 # 🧩 PipeDL Brave Extension (MV3)
 
-Brave extension UI for controlling the local PipeDL backend.
+> Brave extension controls for PipeDL (YouTube action button + popup workflow).
 
 ---
 
 ## ⚠️ Important
 
-A browser extension **cannot run `yt-dlp` directly** (sandbox restriction).
-It sends commands to your local backend (default: `http://localhost:5000`).
-
----
-
-## 📁 Folder
-
-`<repo-root>/yt-dlp-brave-extension`
+Browser extensions **cannot execute `yt-dlp` directly** (sandbox restriction).
+This extension sends requests to your local PipeDL backend (default: `http://localhost:5000`).
 
 ---
 
@@ -27,8 +21,6 @@ It sends commands to your local backend (default: `http://localhost:5000`).
 ---
 
 ## ▶️ Run backend first
-
-In another terminal:
 
 ```bash
 cd <repo-root>/yt-dlp-gui
@@ -47,3 +39,11 @@ python app.py
 - 📂 Open downloads folder
 - 🛠 Options page for backend URL
 - ▶️ YouTube in-page **PipeDL** action-row button + menu
+
+---
+
+## 🧠 Quick tip
+
+If the YouTube button does not appear after updates:
+- Reload extension in `brave://extensions`
+- Refresh the YouTube tab

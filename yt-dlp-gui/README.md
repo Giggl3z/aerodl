@@ -1,12 +1,12 @@
-# 🖥️ PipeDL GUI (`yt-dlp-gui`)
+# 🖥️ PipeDL GUI
 
-Local web backend + modern website UI for running `yt-dlp` with a clean interface.
+> Local web backend + modern website interface for running `yt-dlp` with a clean UX.
 
 ---
 
-## ✨ Features
+## ✨ What this module provides
 
-- 🎬 Preset formats (Best, MP4, WebM, MP3, Opus, WAV)
+- 🎬 Format presets (Best / MP4 / WebM / MP3 / Opus / WAV)
 - ⚙️ Advanced flags (subs, metadata, thumbnail, retries, rate limit, output template)
 - 📜 Live console output
 - 🧾 Task history API
@@ -14,14 +14,13 @@ Local web backend + modern website UI for running `yt-dlp` with a clean interfac
 
 ---
 
-## ▶️ Run
+## ⚡ Run (one-liner)
 
-```bash
-python -m pip install flask yt-dlp
-python app.py
+```powershell
+python -m pip install -r requirements.txt; python app.py
 ```
 
-Open in browser: `http://localhost:5000`
+Open: `http://localhost:5000`
 
 ---
 
@@ -34,7 +33,7 @@ Open in browser: `http://localhost:5000`
 
 ---
 
-## 📂 Download Location
+## 📂 Output Path
 
 `C:\Users\<you>\Downloads\PipeDL`
 
