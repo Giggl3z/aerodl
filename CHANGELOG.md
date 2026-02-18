@@ -19,6 +19,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Simple vs Pro UI mode toggle.
 - Quick copy-download-path action button.
 - Queue controls UI: live queue/running stats, concurrency selector, and per-task cancel buttons.
+- Task list visual polish: status icons, hover motion, and running pulse accent.
 - Extension popup autofills URL from active YouTube tab.
 - Extension badge now shows active queued/running task count.
 

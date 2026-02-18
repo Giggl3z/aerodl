@@ -394,6 +394,7 @@
 
     .task-row.running::before {
       background: color-mix(in srgb, var(--accent) 75%, white);
+      animation: runningPulse 1.2s ease-in-out infinite;
     }
 
     .task-row.queued::before {
@@ -407,6 +408,11 @@
     .task-row.error::before,
     .task-row.canceled::before {
       background: color-mix(in srgb, var(--bad) 80%, white);
+    }
+
+    @keyframes runningPulse {
+      0%, 100% { opacity: .45; }
+      50% { opacity: 1; }
     }
 
     .queue-pill {
@@ -1062,7 +1068,15 @@
         left.innerHTML = `<div class="task-url" title="${t.url}">${t.url}</div><div class="task-meta">${t.format} · ${t.created_at || ''}${q}</div>`;
 
         const status = document.createElement('div');
-        status.innerHTML = `<span class="status-chip ${t.status}">${t.status}</span>`;
+        const statusIconMap = {
+          queued: '⏳',
+          running: '▶',
+          done: '✅',
+          error: '⚠️',
+          canceled: '⛔',
+        };
+        const icon = statusIconMap[t.status] || '•';
+        status.innerHTML = `<span class="status-chip ${t.status}">${icon} ${t.status}</span>`;
 
         const actions = document.createElement('div');
         if (t.status === 'queued' || t.status === 'running') {
