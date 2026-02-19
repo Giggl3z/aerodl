@@ -142,7 +142,7 @@ def parse_progress_from_log(lines: list[str]) -> dict:
     }
 
 
-def build_command(url: str, fmt: str, options: dict) -> list[str]:
+def build_command(url: str, fmt: str, options: dict, cookies_override: str | None = None) -> list[str]:
     base_cmd = [sys.executable, "-m", "yt_dlp"]
 
     exact_format = (options.get("exactFormat") or "").strip()
@@ -176,8 +176,8 @@ def build_command(url: str, fmt: str, options: dict) -> list[str]:
     if bool(options.get("embedThumbnail")):
         cmd += ["--embed-thumbnail"]
 
-    cookies_from_browser = (options.get("cookiesFromBrowser") or "").strip().lower()
-    if cookies_from_browser in ("brave", "chrome", "edge", "firefox"):
+    cookies_from_browser = (cookies_override or options.get("cookiesFromBrowser") or "").strip().lower()
+    if cookies_from_browser in ("brave", "chrome", "edge", "firefox") or ":" in cookies_from_browser:
         cmd += ["--cookies-from-browser", cookies_from_browser]
     else:
         cookies_path = (options.get("cookiesPath") or "").strip()
@@ -200,6 +200,19 @@ def build_command(url: str, fmt: str, options: dict) -> list[str]:
     return cmd
 
 
+def cookie_browser_variants(raw: str) -> list[str]:
+    base = (raw or "").strip().lower()
+    if not base:
+        return []
+    if ":" in base:
+        return [base]
+
+    variants = [base]
+    if base in ("brave", "chrome", "edge"):
+        variants.extend([f"{base}:Default", f"{base}:Profile 1"])
+    return variants
+
+
 def run_yt_dlp(task_id: str):
     with TASKS_LOCK:
         task = TASKS.get(task_id)
@@ -209,50 +222,80 @@ def run_yt_dlp(task_id: str):
         fmt = task["format"]
         options = task["options"]
 
-    cmd = build_command(url, fmt, options)
+    cookie_variants = cookie_browser_variants(options.get("cookiesFromBrowser") or "")
+    if cookie_variants:
+        cmd_variants = [build_command(url, fmt, options, c) for c in cookie_variants]
+    else:
+        cmd_variants = [build_command(url, fmt, options)]
 
-    with TASKS_LOCK:
-        append_log(task, f"$ {' '.join(cmd)}")
+    last_proc = None
 
     try:
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-            bufsize=1,
-            cwd=DOWNLOAD_DIR,
-        )
+        for idx, cmd in enumerate(cmd_variants, start=1):
+            with TASKS_LOCK:
+                task = TASKS.get(task_id)
+                if not task or task.get("status") == "canceled":
+                    return
+                if len(cmd_variants) > 1:
+                    append_log(task, f"Cookie profile attempt {idx}/{len(cmd_variants)}")
+                append_log(task, f"$ {' '.join(cmd)}")
 
-        with TASKS_LOCK:
-            task = TASKS.get(task_id)
-            if not task:
-                proc.terminate()
-                return
-            task["pid"] = proc.pid
-            ACTIVE_PROCS[task_id] = proc
+            proc = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                cwd=DOWNLOAD_DIR,
+            )
+            last_proc = proc
 
-        assert proc.stdout is not None
-        for line in proc.stdout:
             with TASKS_LOCK:
                 task = TASKS.get(task_id)
                 if not task:
-                    continue
-                append_log(task, line.rstrip("\n"))
+                    proc.terminate()
+                    return
+                task["pid"] = proc.pid
+                ACTIVE_PROCS[task_id] = proc
 
-        proc.wait()
+            assert proc.stdout is not None
+            run_lines = []
+            for line in proc.stdout:
+                s = line.rstrip("\n")
+                run_lines.append(s)
+                with TASKS_LOCK:
+                    task = TASKS.get(task_id)
+                    if not task:
+                        continue
+                    append_log(task, s)
+
+            proc.wait()
+
+            with TASKS_LOCK:
+                ACTIVE_PROCS.pop(task_id, None)
+
+            if proc.returncode == 0:
+                break
+
+            # Only auto-iterate fallback variants for known Chromium cookie lock issue.
+            lock_err = any("Could not copy Chrome cookie database" in x for x in run_lines)
+            if not (lock_err and idx < len(cmd_variants)):
+                break
+
+            with TASKS_LOCK:
+                task = TASKS.get(task_id)
+                if task:
+                    append_log(task, "Retrying with another browser profile...")
 
         with TASKS_LOCK:
-            ACTIVE_PROCS.pop(task_id, None)
             task = TASKS.get(task_id)
             if not task:
                 return
 
             if task.get("status") == "canceled":
-                # Already marked by cancel endpoint
                 append_log(task, "")
                 append_log(task, "Task canceled by user.")
-            elif proc.returncode == 0:
+            elif last_proc is not None and last_proc.returncode == 0:
                 task["status"] = "done"
                 task["finished_at"] = now_iso()
                 append_log(task, "")
@@ -260,10 +303,11 @@ def run_yt_dlp(task_id: str):
             else:
                 task["status"] = "error"
                 task["finished_at"] = now_iso()
+                code = last_proc.returncode if last_proc is not None else "?"
                 append_log(task, "")
-                append_log(task, f"yt-dlp exited with code {proc.returncode}.")
+                append_log(task, f"yt-dlp exited with code {code}.")
 
-        if proc.returncode == 0 and bool(options.get("autoOpenFolder", True)) and sys.platform.startswith("win"):
+        if last_proc is not None and last_proc.returncode == 0 and bool(options.get("autoOpenFolder", True)) and sys.platform.startswith("win"):
             try:
                 os.startfile(DOWNLOAD_DIR)
             except Exception as e:
