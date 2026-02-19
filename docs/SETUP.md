@@ -6,6 +6,8 @@ Use this guide for a clean first-time setup on Windows.
 
 ## Requirements
 
+> Run PowerShell as **Administrator** for setup/startup scripts.
+
 - Windows 10/11
 - Python 3.10+
 - Git

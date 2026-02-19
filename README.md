@@ -12,6 +12,8 @@
 
 ## 🚀 Launch in 60 Seconds
 
+> Run PowerShell as **Administrator** for setup/run scripts.
+
 ```powershell
 git clone https://github.com/Giggl3z/pipedl.git
 cd pipedl
