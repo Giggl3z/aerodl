@@ -109,10 +109,11 @@
     style.id = STYLE_ID;
     style.textContent = `
       #${BUTTON_HOST_ID} {
+        position: fixed;
+        z-index: 2147483646;
         display: inline-flex;
         align-items: center;
-        margin-left: 8px;
-        flex: 0 0 auto;
+        pointer-events: auto;
       }
 
       #${BUTTON_ID} {
@@ -471,18 +472,37 @@
     );
   }
 
+  function positionButtonHost() {
+    const host = document.getElementById(BUTTON_HOST_ID);
+    const target = findTarget();
+    if (!host || !target) return;
+
+    const r = target.getBoundingClientRect();
+    const top = Math.max(8, r.top + 2);
+    const left = Math.max(8, Math.min(window.innerWidth - 110, r.right - 96));
+    host.style.top = `${top}px`;
+    host.style.left = `${left}px`;
+  }
+
   function injectButton() {
     const isWatchLike = location.pathname.startsWith('/watch') || location.pathname.startsWith('/shorts/');
     if (!isWatchLike) {
       closeMenu();
+      const host = document.getElementById(BUTTON_HOST_ID);
+      if (host) host.remove();
       return;
     }
 
     const target = findTarget();
     if (!target) return;
-    if (document.getElementById(BUTTON_HOST_ID) || document.getElementById(BUTTON_ID)) return;
 
-    target.appendChild(createButtonHost());
+    let host = document.getElementById(BUTTON_HOST_ID);
+    if (!host) {
+      host = createButtonHost();
+      document.body.appendChild(host);
+    }
+
+    positionButtonHost();
   }
 
   injectStyles();
@@ -497,7 +517,12 @@
 
   window.addEventListener('resize', () => {
     if (document.getElementById(MENU_ID)) closeMenu();
+    injectButton();
   });
+
+  window.addEventListener('scroll', () => {
+    positionButtonHost();
+  }, true);
 
   injectButton();
 })();
