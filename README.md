@@ -97,13 +97,13 @@ Disable auto-start:
 
 ![PipeDL Web UI overview](docs/assets/screenshots/webui-overview.jpg)
 
-### Focus: Download Studio
+### Focus: active download (running progress)
 
-![PipeDL Download Studio panel](docs/assets/screenshots/webui-download-studio-focus.jpg)
+![PipeDL Web UI running task progress](docs/assets/screenshots/webui-download-studio-focus.jpg)
 
-### Focus: Console + Task History
+### Focus: completed download (done state)
 
-![PipeDL Console and Task History panel](docs/assets/screenshots/webui-console-history-focus.jpg)
+![PipeDL Web UI completed task state](docs/assets/screenshots/webui-console-history-focus.jpg)
 
 ## 📸 Screenshots (Extension)
 

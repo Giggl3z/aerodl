@@ -28,9 +28,9 @@ Open: `http://localhost:5000`
 
 ![PipeDL Web UI overview](../docs/assets/screenshots/webui-overview.jpg)
 
-![PipeDL Download Studio panel](../docs/assets/screenshots/webui-download-studio-focus.jpg)
+![PipeDL Web UI running task progress](../docs/assets/screenshots/webui-download-studio-focus.jpg)
 
-![PipeDL Console and Task History panel](../docs/assets/screenshots/webui-console-history-focus.jpg)
+![PipeDL Web UI completed task state](../docs/assets/screenshots/webui-console-history-focus.jpg)
 
 ---
 
