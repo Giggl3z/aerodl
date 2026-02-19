@@ -173,8 +173,6 @@ Use PipeDL in compliance with platform Terms of Service and applicable laws.
 
 ## ℹ️ Compact Reference
 
-<sub>
-
 ### API endpoints
 
 - `POST /api/download`
@@ -216,5 +214,3 @@ Use PipeDL in compliance with platform Terms of Service and applicable laws.
 
 - Browser extensions cannot execute `yt-dlp` directly (sandbox restriction).
 - Local backend (`yt-dlp-gui`) must be running for extension actions.
-
-</sub>
