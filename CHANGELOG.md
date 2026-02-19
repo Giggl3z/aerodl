@@ -57,8 +57,6 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Fixed
 - Fixed queue deadlock in `/api/download` caused by nested locking during task trimming.
 - Better queue visibility in UI status hint (shows queued position before running).
-- Moved `pipedl_archive.txt` out of Downloads and into `~/.pipedl/` to keep media output folder clean.
-- Fixed YouTube action-row layout breakage by mounting PipeDL button as a sibling host (not inside segmented button internals).
 
 ## [2026-02-18]
 

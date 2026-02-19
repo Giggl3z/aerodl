@@ -1,6 +1,5 @@
 (() => {
   const BUTTON_ID = 'aerodl-yt-action-btn';
-  const HOST_ID = 'aerodl-yt-action-host';
   const MENU_ID = 'aerodl-yt-menu';
   const STYLE_ID = 'aerodl-yt-style';
 
@@ -108,15 +107,8 @@
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      #${HOST_ID} {
-        display: inline-flex;
-        align-items: center;
-        margin-left: 8px;
-        flex: 0 0 auto;
-        contain: layout style;
-      }
-
       #${BUTTON_ID} {
+        margin-left: 8px;
         border-radius: 18px;
         border: 1px solid rgba(255,255,255,.18);
         padding: 0 12px;
@@ -426,10 +418,7 @@
     document.addEventListener('keydown', onMenuKeydown, true);
   }
 
-  function createButtonHost() {
-    const host = document.createElement('div');
-    host.id = HOST_ID;
-
+  function createButton() {
     const btn = document.createElement('button');
     btn.id = BUTTON_ID;
     btn.type = 'button';
@@ -453,9 +442,7 @@
         createMenu(btn);
       }
     });
-
-    host.appendChild(btn);
-    return host;
+    return btn;
   }
 
   function findTarget() {
@@ -473,24 +460,14 @@
     const isWatchLike = location.pathname.startsWith('/watch') || location.pathname.startsWith('/shorts/');
     if (!isWatchLike) {
       closeMenu();
-      document.getElementById(HOST_ID)?.remove();
       return;
     }
 
     const target = findTarget();
     if (!target) return;
-    if (document.getElementById(HOST_ID) || document.getElementById(BUTTON_ID)) return;
+    if (document.getElementById(BUTTON_ID)) return;
 
-    const host = createButtonHost();
-
-    // Prefer attaching as a sibling next to the action renderer,
-    // avoiding insertion inside YouTube's segmented button internals.
-    const actionRenderer = target.closest('ytd-menu-renderer') || target.closest('#actions-inner') || target.parentElement;
-    if (actionRenderer && actionRenderer.parentElement) {
-      actionRenderer.insertAdjacentElement('afterend', host);
-    } else {
-      target.parentElement?.appendChild(host);
-    }
+    target.appendChild(createButton());
   }
 
   injectStyles();
@@ -500,7 +477,6 @@
 
   window.addEventListener('yt-navigate-finish', () => {
     closeMenu();
-    document.getElementById(HOST_ID)?.remove();
     setTimeout(injectButton, 150);
   });
 
