@@ -137,9 +137,12 @@ async function refreshTasks() {
     items.slice(0, 20).forEach((task) => {
       const row = document.createElement('div');
       row.className = 'task';
+      const p = task.progress?.percent;
+      const pct = typeof p === 'number' ? ` · ${p.toFixed(1)}%` : '';
+      const speed = task.progress?.speed ? ` · ${task.progress.speed}` : '';
       row.innerHTML = `
         <div title="${task.url}">${task.url}</div>
-        <div class="meta">${task.format} · ${task.status}</div>
+        <div class="meta">${task.format} · ${task.status}${pct}${speed}</div>
       `;
       row.addEventListener('click', () => {
         state.currentTaskId = task.task_id;
@@ -167,7 +170,11 @@ async function pollStatus() {
     }
 
     if (data.status === 'running') {
-      setHint(`Task ${state.currentTaskId.slice(0, 8)} running...`);
+      const p = data.progress?.percent;
+      const pct = typeof p === 'number' ? ` (${p.toFixed(1)}%)` : '';
+      const speed = data.progress?.speed ? ` · ${data.progress.speed}` : '';
+      const eta = data.progress?.eta ? ` · ETA ${data.progress.eta}` : '';
+      setHint(`Task ${state.currentTaskId.slice(0, 8)} running${pct}${speed}${eta}`);
       return;
     }
 

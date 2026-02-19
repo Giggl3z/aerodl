@@ -6,6 +6,7 @@
 
   let selectedFormat = 'best_video';
   let highlightedIndex = 0;
+  let queuePollTimer = null;
 
   const formats = [
     { v: 'best_video', label: 'Best mixed', meta: 'auto best', icon: '⬇' },
@@ -265,6 +266,20 @@
       #${MENU_ID} .aerodl-item .check { color: #3ea6ff; opacity: 0; font-weight: 700; }
       #${MENU_ID} .aerodl-item.active .check { opacity: 1; }
 
+      #${MENU_ID} .aerodl-queue {
+        border-top: 1px solid rgba(255,255,255,.08);
+        border-bottom: 1px solid rgba(255,255,255,.08);
+        padding: 8px 10px;
+        font-size: 12px;
+        color: #cbd5e1;
+        background: rgba(0,0,0,.14);
+      }
+      #${MENU_ID} .aerodl-queue .line2 {
+        margin-top: 3px;
+        font-size: 11px;
+        color: #94a3b8;
+      }
+
       #${MENU_ID} .aerodl-actions {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -298,6 +313,10 @@
     if (existing) existing.remove();
     const btn = document.getElementById(BUTTON_ID);
     btn?.classList.remove('active');
+    if (queuePollTimer) {
+      clearInterval(queuePollTimer);
+      queuePollTimer = null;
+    }
     document.removeEventListener('keydown', onMenuKeydown, true);
   }
 
@@ -307,6 +326,38 @@
       x.classList.toggle('active', isActive);
       x.classList.toggle('highlight', i === highlightedIndex);
     });
+  }
+
+  async function updateQueueSection(menu) {
+    try {
+      const backend = await getBackend();
+      const res = await extFetch(`${backend}/api/tasks`, { method: 'GET' });
+      if (!res.ok || !Array.isArray(res.data)) {
+        const q = menu.querySelector('.aerodl-queue');
+        if (q) q.innerHTML = 'Queue: unavailable';
+        return;
+      }
+
+      const tasks = res.data;
+      const queued = tasks.filter((t) => t?.status === 'queued').length;
+      const running = tasks.filter((t) => t?.status === 'running').length;
+      const recent = tasks.find((t) => t?.status === 'running') || tasks[0];
+
+      const q = menu.querySelector('.aerodl-queue');
+      if (!q) return;
+
+      let line2 = 'No active task';
+      if (recent) {
+        const p = recent.progress?.percent;
+        const pct = typeof p === 'number' ? ` · ${p.toFixed(1)}%` : '';
+        line2 = `${recent.status}${pct}`;
+      }
+
+      q.innerHTML = `Queue: ${queued} queued · ${running} running<div class="line2">Now: ${line2}</div>`;
+    } catch {
+      const q = menu.querySelector('.aerodl-queue');
+      if (q) q.innerHTML = 'Queue: offline';
+    }
   }
 
   function onMenuKeydown(e) {
@@ -370,6 +421,7 @@
           </button>
         `).join('')}
       </div>
+      <div class="aerodl-queue">Queue: checking...</div>
       <div class="aerodl-actions">
         <button class="aerodl-btn" id="aerodl-open-popup">Open panel</button>
         <button class="aerodl-btn primary" id="aerodl-start">Download</button>
@@ -399,6 +451,8 @@
     menu.style.left = `${Math.max(8, left)}px`;
 
     setActiveInMenu(menu, selectedFormat);
+    updateQueueSection(menu);
+    queuePollTimer = setInterval(() => updateQueueSection(menu), 2200);
 
     menu.querySelectorAll('.aerodl-item').forEach((item, i) => {
       item.addEventListener('mouseenter', () => {
