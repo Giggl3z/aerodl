@@ -42,6 +42,7 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - README license section moved to the end of the document.
 - Extension popup autofills URL from active YouTube tab.
 - Extension popup now shows live backend server status (online/offline), disables backend actions when offline, and surfaces a clear server-offline hint.
+- YouTube in-page PipeDL menu now includes quick video quality targets (2160p/1440p/1080p/720p/480p).
 - Extension badge now shows active queued/running task count.
 - Extension now sends native completion notifications when tasks transition from queued/running to done/error/canceled.
 - `pipedl-server` tray window refreshed with a modern dark UI, accent colors, status indicator dot, and improved log window styling.

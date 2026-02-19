@@ -8,9 +8,14 @@
   let highlightedIndex = 0;
 
   const formats = [
-    { v: 'best_video', label: 'Best mixed', meta: 'video+audio', icon: '⬇' },
-    { v: 'mp4', label: 'MP4 priority', meta: 'h264', icon: '🎬' },
-    { v: 'webm', label: 'WebM priority', meta: 'vp9', icon: '📹' },
+    { v: 'best_video', label: 'Best mixed', meta: 'auto best', icon: '⬇' },
+    { v: 'v2160', label: 'Video 2160p', meta: '4k cap', icon: '🎬', exact: 'bestvideo[height<=2160]+bestaudio/best[height<=2160]' },
+    { v: 'v1440', label: 'Video 1440p', meta: '2k cap', icon: '🎬', exact: 'bestvideo[height<=1440]+bestaudio/best[height<=1440]' },
+    { v: 'v1080', label: 'Video 1080p', meta: 'full hd', icon: '🎬', exact: 'bestvideo[height<=1080]+bestaudio/best[height<=1080]' },
+    { v: 'v720', label: 'Video 720p', meta: 'hd cap', icon: '📹', exact: 'bestvideo[height<=720]+bestaudio/best[height<=720]' },
+    { v: 'v480', label: 'Video 480p', meta: 'sd cap', icon: '📹', exact: 'bestvideo[height<=480]+bestaudio/best[height<=480]' },
+    { v: 'mp4', label: 'MP4 priority', meta: 'h264', icon: '🎞' },
+    { v: 'webm', label: 'WebM priority', meta: 'vp9', icon: '📼' },
     { v: 'audio_best', label: 'Audio MP3', meta: 'extract', icon: '🎵' },
     { v: 'audio_opus', label: 'Audio Opus', meta: 'extract', icon: '🎧' },
     { v: 'audio_wav', label: 'Audio WAV', meta: 'lossless', icon: '🔊' },
@@ -72,13 +77,27 @@
     toast.__timer = setTimeout(() => toast.remove(), 2600);
   }
 
-  async function startDownload(format = 'best_video') {
+  async function startDownload(formatValue = 'best_video') {
     const backend = await getBackend();
     const url = getWatchUrl();
+    const selected = formats.find((f) => f.v === formatValue);
+
+    const payload = {
+      url,
+      format: selected?.exact ? 'best_video' : formatValue,
+      options: {
+        autoOpenFolder: true,
+      },
+    };
+
+    if (selected?.exact) {
+      payload.options.exactFormat = selected.exact;
+    }
+
     const res = await extFetch(`${backend}/api/download`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, format, options: { autoOpenFolder: true } }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(res?.data?.error || `${res.status} ${res.statusText}`);
     return res.data.task_id;
