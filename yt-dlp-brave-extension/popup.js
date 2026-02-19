@@ -16,6 +16,7 @@ const ui = {
   autoOpen: el('autoOpen'),
   downloadBtn: el('downloadBtn'),
   refreshBtn: el('refreshBtn'),
+  retryFailedBtn: el('retryFailedBtn'),
   openOptions: el('openOptions'),
   openFolderBtn: el('openFolderBtn'),
   tasks: el('tasks'),
@@ -87,6 +88,32 @@ function refreshBadgeSoon() {
   });
 }
 
+async function cancelTask(taskId) {
+  await api(`/api/cancel/${taskId}`, { method: 'POST' });
+  if (state.currentTaskId === taskId) {
+    setStatus('canceled');
+    ui.downloadBtn.disabled = false;
+    ui.downloadBtn.textContent = 'Start Download';
+  }
+  setHint(`Canceled ${taskId.slice(0, 8)}.`);
+  refreshTasks();
+  refreshBadgeSoon();
+}
+
+async function retryFailed() {
+  const online = await checkServerStatus();
+  if (!online) return;
+
+  try {
+    const data = await api('/api/retry-failed', { method: 'POST' });
+    setHint(data.created ? `Retried ${data.created} failed tasks.` : 'No failed tasks to retry.');
+    refreshTasks();
+    refreshBadgeSoon();
+  } catch (err) {
+    setHint(`Retry failed: ${err.message}`);
+  }
+}
+
 function gatherOptions() {
   return {
     writeSubs: ui.writeSubs.checked,
@@ -140,14 +167,57 @@ async function refreshTasks() {
       const p = task.progress?.percent;
       const pct = typeof p === 'number' ? ` · ${p.toFixed(1)}%` : '';
       const speed = task.progress?.speed ? ` · ${task.progress.speed}` : '';
+
+      const canCancel = task.status === 'queued' || task.status === 'running';
+      const canRetry = task.status === 'error' || task.status === 'canceled';
+
       row.innerHTML = `
-        <div title="${task.url}">${task.url}</div>
+        <div class="task-top">
+          <div title="${task.url}">${task.url}</div>
+          <div class="task-actions">
+            ${canCancel ? `<button class="task-btn cancel" data-action="cancel">cancel</button>` : ''}
+            ${canRetry ? `<button class="task-btn retry" data-action="retry">retry</button>` : ''}
+          </div>
+        </div>
         <div class="meta">${task.format} · ${task.status}${pct}${speed}</div>
       `;
+
       row.addEventListener('click', () => {
         state.currentTaskId = task.task_id;
         pollStatus();
       });
+
+      const cancelBtn = row.querySelector('[data-action="cancel"]');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await cancelTask(task.task_id);
+        });
+      }
+
+      const retryBtn = row.querySelector('[data-action="retry"]');
+      if (retryBtn) {
+        retryBtn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          try {
+            const data = await api('/api/download', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                url: task.url,
+                format: task.format,
+                options: gatherOptions(),
+              }),
+            });
+            setHint(`Retried as ${data.task_id.slice(0, 8)}.`);
+            refreshTasks();
+            refreshBadgeSoon();
+          } catch (err) {
+            setHint(`Retry failed: ${err.message}`);
+          }
+        });
+      }
+
       ui.tasks.appendChild(row);
     });
   } catch (err) {
@@ -252,6 +322,7 @@ async function openDownloads() {
 
 ui.downloadBtn.addEventListener('click', startDownload);
 ui.refreshBtn.addEventListener('click', refreshTasks);
+ui.retryFailedBtn.addEventListener('click', retryFailed);
 ui.openOptions.addEventListener('click', () => chrome.runtime.openOptionsPage());
 ui.swatches.forEach((s) => s.addEventListener('click', () => applyTheme(s.dataset.theme)));
 ui.openFolderBtn.addEventListener('click', openDownloads);

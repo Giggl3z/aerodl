@@ -48,7 +48,10 @@
     <section class="card">
       <div class="row">
         <strong>Task History</strong>
-        <button id="refreshBtn" class="ghost small">refresh</button>
+        <div style="display:flex;gap:6px;">
+          <button id="retryFailedBtn" class="ghost small">retry failed</button>
+          <button id="refreshBtn" class="ghost small">refresh</button>
+        </div>
       </div>
       <div id="tasks" class="tasks"></div>
     </section>

@@ -40,6 +40,11 @@ button{border:1px solid var(--line);background:#131f3a;color:var(--text);border-
 .task{padding:7px 8px;border-bottom:1px solid var(--line);font-size:12px;cursor:pointer}
 .task:last-child{border-bottom:0}
 .task .meta{color:var(--muted);font-size:11px}
+.task-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.task-actions{display:flex;gap:5px;flex:0 0 auto}
+.task-btn{font-size:10px;padding:2px 6px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.task-btn.cancel{color:#fecaca;border-color:color-mix(in srgb,#ef4444 45%, var(--line))}
+.task-btn.retry{color:#bfdbfe;border-color:color-mix(in srgb,#60a5fa 45%, var(--line))}
 .console{margin:8px 0 0;background:#030815;border:1px solid var(--line);border-radius:8px;padding:8px;max-height:170px;overflow:auto;font-size:11px;line-height:1.4;white-space:pre-wrap}
 body[data-theme="matrix"] .console{background:#010403;color:#ccffd8}
 .status{font-size:11px;color:var(--muted);text-transform:uppercase}

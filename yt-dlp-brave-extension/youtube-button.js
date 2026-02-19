@@ -7,6 +7,7 @@
   let selectedFormat = 'best_video';
   let highlightedIndex = 0;
   let queuePollTimer = null;
+  let latestActiveTaskId = null;
 
   const formats = [
     { v: 'best_video', label: 'Best mixed', meta: 'auto best', icon: '⬇' },
@@ -332,31 +333,38 @@
     try {
       const backend = await getBackend();
       const res = await extFetch(`${backend}/api/tasks`, { method: 'GET' });
+      const qMain = menu.querySelector('.aerodl-queue .q-main');
+      const qLine = menu.querySelector('.aerodl-queue .line2');
       if (!res.ok || !Array.isArray(res.data)) {
-        const q = menu.querySelector('.aerodl-queue');
-        if (q) q.innerHTML = 'Queue: unavailable';
+        if (qMain) qMain.textContent = 'Queue: unavailable';
+        if (qLine) qLine.textContent = 'Now: -';
+        latestActiveTaskId = null;
         return;
       }
 
       const tasks = res.data;
       const queued = tasks.filter((t) => t?.status === 'queued').length;
       const running = tasks.filter((t) => t?.status === 'running').length;
-      const recent = tasks.find((t) => t?.status === 'running') || tasks[0];
+      const active = tasks.find((t) => t?.status === 'running') || tasks.find((t) => t?.status === 'queued') || null;
 
-      const q = menu.querySelector('.aerodl-queue');
-      if (!q) return;
+      if (qMain) qMain.textContent = `Queue: ${queued} queued · ${running} running`;
 
-      let line2 = 'No active task';
-      if (recent) {
-        const p = recent.progress?.percent;
+      let line2 = 'Now: no active task';
+      latestActiveTaskId = null;
+      if (active) {
+        latestActiveTaskId = active.task_id;
+        const p = active.progress?.percent;
         const pct = typeof p === 'number' ? ` · ${p.toFixed(1)}%` : '';
-        line2 = `${recent.status}${pct}`;
+        line2 = `Now: ${active.status}${pct}`;
       }
 
-      q.innerHTML = `Queue: ${queued} queued · ${running} running<div class="line2">Now: ${line2}</div>`;
+      if (qLine) qLine.textContent = line2;
     } catch {
-      const q = menu.querySelector('.aerodl-queue');
-      if (q) q.innerHTML = 'Queue: offline';
+      const qMain = menu.querySelector('.aerodl-queue .q-main');
+      const qLine = menu.querySelector('.aerodl-queue .line2');
+      if (qMain) qMain.textContent = 'Queue: offline';
+      if (qLine) qLine.textContent = 'Now: -';
+      latestActiveTaskId = null;
     }
   }
 
@@ -421,7 +429,14 @@
           </button>
         `).join('')}
       </div>
-      <div class="aerodl-queue">Queue: checking...</div>
+      <div class="aerodl-queue">
+        <div class="q-main">Queue: checking...</div>
+        <div class="line2">Now: -</div>
+        <div class="line2" style="display:flex;gap:6px;margin-top:6px;">
+          <button class="aerodl-btn" id="aerodl-cancel-active" style="height:30px;font-size:11px;padding:0 10px;">Cancel active</button>
+          <button class="aerodl-btn" id="aerodl-refresh-queue" style="height:30px;font-size:11px;padding:0 10px;">Refresh queue</button>
+        </div>
+      </div>
       <div class="aerodl-actions">
         <button class="aerodl-btn" id="aerodl-open-popup">Open panel</button>
         <button class="aerodl-btn primary" id="aerodl-start">Download</button>
@@ -480,11 +495,34 @@
         const taskId = await startDownload(selectedFormat);
         chrome.runtime.sendMessage({ type: 'PIPEDL_BADGE_REFRESH' }, () => {});
         showToast(`PipeDL queued (${taskId.slice(0, 8)})`);
-        closeMenu();
+        await updateQueueSection(menu);
+        startBtn.disabled = false;
+        startBtn.textContent = old;
       } catch (err) {
         showToast(`PipeDL error: ${err.message}`, true);
         startBtn.disabled = false;
         startBtn.textContent = old;
+      }
+    });
+
+    menu.querySelector('#aerodl-refresh-queue').addEventListener('click', () => {
+      updateQueueSection(menu);
+    });
+
+    menu.querySelector('#aerodl-cancel-active').addEventListener('click', async () => {
+      if (!latestActiveTaskId) {
+        showToast('No active queued/running task.');
+        return;
+      }
+      try {
+        const backend = await getBackend();
+        const res = await extFetch(`${backend}/api/cancel/${latestActiveTaskId}`, { method: 'POST' });
+        if (!res.ok) throw new Error(res?.data?.error || 'Cancel failed');
+        showToast(`Canceled (${latestActiveTaskId.slice(0, 8)})`);
+        chrome.runtime.sendMessage({ type: 'PIPEDL_BADGE_REFRESH' }, () => {});
+        await updateQueueSection(menu);
+      } catch (err) {
+        showToast(`Cancel error: ${err.message}`, true);
       }
     });
 
