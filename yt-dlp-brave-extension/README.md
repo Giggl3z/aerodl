@@ -40,6 +40,14 @@ python app.py
 - 🛠 Options page for backend URL
 - ▶️ YouTube in-page **PipeDL** action-row button + menu
 
+## 📸 Screenshots
+
+![PipeDL extension menu on YouTube](../docs/assets/screenshots/extension-context-menu-open.jpg)
+
+![PipeDL quick download menu](../docs/assets/screenshots/extension-menu-focus.jpg)
+
+![PipeDL action-row button](../docs/assets/screenshots/extension-action-button-focus.jpg)
+
 ---
 
 ## 🧠 Quick tip

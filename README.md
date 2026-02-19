@@ -91,6 +91,20 @@ Disable auto-start:
 - **Brave Popup** (`yt-dlp-brave-extension`) → compact quick-control
 - **YouTube Action Button** → run downloads directly from watch pages
 
+## 📸 Screenshots (Extension)
+
+### YouTube context + PipeDL menu
+
+![PipeDL extension menu on YouTube](docs/assets/screenshots/extension-context-menu-open.jpg)
+
+### Focus: quick download menu
+
+![PipeDL quick download menu](docs/assets/screenshots/extension-menu-focus.jpg)
+
+### Focus: YouTube action-row button
+
+![PipeDL action-row button](docs/assets/screenshots/extension-action-button-focus.jpg)
+
 ---
 
 ## 📦 Install Options
